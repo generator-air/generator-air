@@ -27,7 +27,7 @@ const questions = [
 			value: 'vue'
 		}],
 		when(answers) {
-			return answers.type !== 'miniprogram'
+			return answers.type !== 'miniprogram';
 		}
 	},
 	{

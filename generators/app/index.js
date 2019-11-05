@@ -1,5 +1,5 @@
 const Generator = require('yeoman-generator');
-const questions = require('../../model/questions')
+const questions = require('../../model/questions');
 //可以在terminal打印自定义样式的字
 require('colors');
 
@@ -14,23 +14,23 @@ module.exports = class extends Generator {
 			required: false, // this.argument不传第二个option参数，这里默认true
 			default: this.appname,
 			desc: '项目名称'
-		})
+		});
 
 		// 调用this.option，指定自定义的flag。并定义flag的名称为 coffee（可通过 yo quyu --help 查看到自定义的flag）
 		this.option('coffee', {
 			alias: 'co'
-		})
+		});
 		// 输出调用时传入的 arguments
 		// this.log('args:', args)
 		// 不自动执行的 helper（实例方法）
 		this.helperMethod = function () {
 			this.log('won\'t be called automatically');
-		}
+		};
 	}
 
 	/* 生命周期函数 */
 	initializing() {
-		this.sourceRoot('projects')
+		this.sourceRoot('projects');
 		// 读取yo quyu argument，传入的 argument。如果传入了多个 argument，且 argument 类型未定义为 Array，这里会取第一个
 		// this.log('initializing argument:', this.options.projectName)
 		// this.log('initializing option:', this.options.coffee)
@@ -44,17 +44,17 @@ module.exports = class extends Generator {
 	}
 
 	configuring() {
-		this.log('app configuring')
+		this.log('app configuring');
 	}
 
 	default() {
-		this.log('app default')
+		this.log('app default');
 	}
 
 	writing() {
 		const pkgJson = {
 			dependencies: {
-				
+
 			}
 		};
 		// this.destinationPath 指定要写入 pkgJson 的目标 package.json
@@ -71,7 +71,7 @@ module.exports = class extends Generator {
 	}
 
 	conflicts() {
-		this.log('app conflicts')
+		this.log('app conflicts');
 	}
 
 	install() {
@@ -81,7 +81,7 @@ module.exports = class extends Generator {
 	}
 
 	end() {
-		this.log("\n" + "Congratulations! Project created successfully ~".green + "\n")
+		this.log("\n" + "Congratulations! Project created successfully ~".green + "\n");
 	}
 
 };
