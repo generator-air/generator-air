@@ -1,0 +1,19 @@
+{
+  "name": "generator-quyu",
+  "version": "0.1.0",
+  "description": "",
+  "files": [
+    "generators",
+    "vue",
+    "react"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "yeoman-generator": "^4.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0"
+  }
+}

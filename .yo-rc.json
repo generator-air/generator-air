@@ -1,0 +1,10 @@
+{
+  "generator-quyu": {
+    "promptValues": {
+      "name": "www",
+      "cool": true,
+      "projectName": "测试"
+    },
+    "test": "config test"
+  }
+}
