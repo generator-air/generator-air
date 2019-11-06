@@ -25,6 +25,6 @@ module.exports = {
 			'no-misleading-character-class': 'off',
 			'no-useless-catch': 'off',
 			'require-atomic-updates': 'off',
-			'semi': 'error'
+			'semi': ['error', 'always']
 	}
 };
