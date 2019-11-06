@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "eslint": "eslint generators/** model/**"
+    "lint": "eslint generators/** model/**",
+    "lint-fix": "eslint --fix generators/** model/**"
   },
   "files": [
     "generators",
@@ -28,15 +29,7 @@
     }
   },
   "lint-staged": {
-    "generators/*.js": [
-      "eslint",
-      "git add"
-    ],
-    "model/*.js": [
-      "eslint",
-      "git add"
-    ],
-    ".eslintrc.js": [
+    "*.js": [
       "eslint",
       "git add"
     ]

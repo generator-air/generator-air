@@ -45,7 +45,7 @@ const questions = [
 			value: 'wepy'
 		}],
 		when(answers) {
-			return answers.type === 'miniprogram'
+			return answers.type === 'miniprogram';
 		}
 	},
 	{
@@ -62,7 +62,7 @@ const questions = [
 			value: 'element-ui'
 		}],
 		when(answers) {
-			return answers.isUseUiFramework && answers.frameworkH5 === 'vue'
+			return answers.isUseUiFramework && answers.frameworkH5 === 'vue';
 		}
 	},
 	{
@@ -74,7 +74,7 @@ const questions = [
 			value: 'ant-design'
 		}],
 		when(answers) {
-			return answers.isUseUiFramework && answers.frameworkH5 === 'react'
+			return answers.isUseUiFramework && answers.frameworkH5 === 'react';
 		}
 	},
 	{
@@ -86,7 +86,7 @@ const questions = [
 			value: 'taroUI'
 		}],
 		when(answers) {
-			return answers.isUseUiFramework && answers.frameworkMini === 'taro'
+			return answers.isUseUiFramework && answers.frameworkMini === 'taro';
 		}
 	},
 	{
@@ -98,7 +98,7 @@ const questions = [
 			value: 'minUI'
 		}],
 		when(answers) {
-			return answers.isUseUiFramework && answers.frameworkMini === 'wepy'
+			return answers.isUseUiFramework && answers.frameworkMini === 'wepy';
 		}
 	},
 	{
@@ -129,6 +129,6 @@ const questions = [
 			value: 'phone'
 		}]
 	}
-]
+];
 
-module.exports = questions
+module.exports = questions;
