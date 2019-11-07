@@ -20,11 +20,11 @@ const questions = [
 		name: 'frameworkH5',
 		message: '请选择期望使用的框架',
 		choices: [{
-			name: 'react',
-			value: 'react'
-		}, {
 			name: 'vue',
 			value: 'vue'
+		}, {
+			name: 'react',
+			value: 'react'
 		}],
 		when(answers) {
 			return answers.type !== 'miniprogram';
@@ -109,7 +109,8 @@ const questions = [
 	{
 		type: 'input',
 		name: 'projectName',
-		message: '请输入项目名称'
+		message: '请输入项目名称',
+		default: 'quyu-project'
 	},
 	{
 		type: 'list',
