@@ -46,9 +46,14 @@ module.exports = class extends Generator {
 						shell.rm('-rf', this.seedName);
 						shell.exec(`git clone ${repository}`);
 					}
-					done();
+				} else {
+					shell.exec(`git clone ${repository}`);
 				}
+				done();
 			});
+		} else {
+			this.log("\n" + "啊哦...所选脚手架尚在开发中，请关注后续版本更新~^_^".yellow + "\n");
+			shell.exit(1);
 		}
 	}
 	// 统一的脚手架模板复制入口
@@ -95,7 +100,6 @@ module.exports = class extends Generator {
 	// No1
 	initializing() {
 		this.log('initializing:', 1);
-		this.log('appname:', this.appname);
 		fs.exists(path.resolve(__dirname, '../../projects'), exists => {
 			if (!exists) {
 				// 创建用于存放脚手架模板的目录
@@ -118,7 +122,7 @@ module.exports = class extends Generator {
 		const answers = this.answers;
 		if (answers) {
 			// 根据用户选择，获取对应的 git 仓库，并进行 clone
-			this._getGitRepository(answers.type, answers.frameworkH5 || answers.frameworkMini);
+			this._getGitRepository(answers.type, answers.framework);
 		}
 	}
 	// No4
@@ -128,12 +132,9 @@ module.exports = class extends Generator {
 	// No5
 	writing() {
 		this.log('writing:', 5);
-		// 【待删除】脚手架里的index.html读取了BASE_URL字段。当前answers中没有这个字段，出现报错。为绕过报错，模拟测试数据
-		this.answers.BASE_URL = '';
 
 		const done = this.async();
 		fs.exists(`${this.destinationRoot()}/${this.answers.projectName}`, async exists => {
-			this.log('项目已存在:', exists);
 			// 如果用户当前目录下，已存在同名项目
 			if (exists) {
 				const answer = await this.prompt({
@@ -143,8 +144,11 @@ module.exports = class extends Generator {
 				});
 				if (answer.isReCreate) {
 					shell.rm('-rf', `${this.destinationRoot()}/${this.answers.projectName}`);
+					this._fileCopy();
+				} else {
+					this.log("\n" + "结束创建。" + "\n");
+					shell.exit(1);
 				}
-				this._fileCopy();
 			} else {
 				this._fileCopy();
 			}
@@ -153,9 +157,7 @@ module.exports = class extends Generator {
 
 		// 动态写入 package.json
 		// const pkgJson = {
-		// 	dependencies: {
-
-		// 	}
+		// 	dependencies: {}
 		// };
 		// this.destinationPath 指定要写入 pkgJson 的目标 package.json
 		// this.fs.extendJSON(this.destinationPath(`public/${this.seedName}/package.json`), pkgJson);
@@ -167,9 +169,15 @@ module.exports = class extends Generator {
 	// No7
 	install() {
 		this.log('install:', 7);
-		/** 执行根目录下 package.json 的安装。
-		/* 【注】app/index.js 执行根目录的 package.json 安装。其他各文件夹下的 index.js 的 install()，执行各自文件夹下的 package.json 安装 */
-		// this.yarnInstall();
+		// 进入刚刚创建的脚手架目录
+		shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
+		// 检查是否安装了yarn
+		if (shell.which('yarn')) {
+			// 执行npm包安装
+			this.yarnInstall();
+		} else if (shell.which('npm')) {
+			this.npmInstall();
+		}
 	}
 	// No8
 	end() {
