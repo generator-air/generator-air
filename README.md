@@ -22,7 +22,8 @@ yo air
 ```shell
 npm run dev
 ```
-// 配启动成功的终端截图
+出现下图，则启动成功：
+![image](./readmeImgs/npm_run_dev.png)
 启动成功后，浏览器访问 localhost:8090
 // 配浏览器成功打开，且控制台无报错的截图
 
