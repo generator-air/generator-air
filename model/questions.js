@@ -87,6 +87,21 @@ const questions = [
 		}
 	},
 	{
+		type: 'list',
+		name: 'loginType',
+		message: '请选择项目使用的登录方式',
+		choices: [{
+			name: '第三方登录（默认推荐）',
+			value: 'third'
+		}, {
+			name: '本系统登录',
+			value: 'self'
+		}],
+		when(answers) {
+			return answers.type === 'pc' || answers.type === 'h5';
+		}
+	},
+	{
 		type: 'input',
 		name: 'projectName',
 		message: '请输入项目名称',

@@ -20,13 +20,13 @@ module.exports = class extends Generator {
 
 	/* 私有函数 */
 	// 获取脚手架模板的git仓库地址，并克隆
-	_getGitRepository(projectType, framework) {
+	_getGitRepository(answers) {
 		// 检查git命令是否存在
 		if (!shell.which('git')) {
 			shell.echo('发生错误。请确保您已经安装了Git');
 			shell.exit(1);
 		}
-		const repository = mapToGit(projectType, framework);
+		const repository = mapToGit(answers);
 		if (repository) {
 			this.seedName = repository.slice(repository.lastIndexOf('/') + 1, repository.indexOf('.git'));
 			// 进入 projects 目录
@@ -122,7 +122,7 @@ module.exports = class extends Generator {
 		const answers = this.answers;
 		if (answers) {
 			// 根据用户选择，获取对应的 git 仓库，并进行 clone
-			this._getGitRepository(answers.type, answers.framework);
+			this._getGitRepository(answers);
 		}
 	}
 	// No4
