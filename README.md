@@ -371,7 +371,18 @@ Aegis是腾讯开源的一站式前端监控解决方案，涵盖了日志上报
 
 ##### 5.4.1 使用demo
 
-###### 初始化aegis实例
+###### 初始化
+
+打开全局开关
+
+在config.js中配置
+
+```
+config.logReport = true
+```
+
+初始化aegis实例
+
 ```javascript
 const aegis = new Aegis({
     id: 0, // 在 aegis.ivweb.io 申请到的 项目id
