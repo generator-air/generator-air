@@ -337,7 +337,14 @@ export default {
 我们在request.js中使用了拦截器，处理errorDict中定义的响应。你可以放心地将所有错误处理，统一配置在这个字典中。除此之外，只专注于数据正确响应的逻辑开发即可。
 &nbsp;
 
-#### 5.4 日志监控 —— aegis模块
+#### 5.4 日志监控模块
+// 这里写简介，我们选择引入aegis进行日志监控+选用理由
+##### 5.4.1 使用demo
+##### 5.4.2 默认能力（//提供的那三个方法+使用方式。这个标题名字太想好，兴哥想想）
+##### 5.4.3 能力扩展
+更多信息，可阅读aegis官网：[http://aegis.oa.com/](http://aegis.oa.com/ "http://aegis.oa.com")
+&nbsp;
+
 #### 5.5 前后端分离 —— mock支持
 我们提供了，使用在线mock/本地mock，两种mock方式，你可以按需选择。
 
@@ -364,7 +371,7 @@ config.mock = 'http://127.0.0.1:3001'
 【说明】
 本地mock，使用json-server。
 
-mock目录结构：
+【mock目录结构】
 ```javascript
 ├── data                    // 存放mock数据
 |  ├── fail                  // 模拟调用失败的mock数据
@@ -378,7 +385,26 @@ mock目录结构：
 ├── db.js                    // 用于生成mock数据结构
 ├── mock-server.js      // 服务启动入口
 ```
-关于json-server的具体引入方案，详见：[https://www.jianshu.com/p/2b18352b49d1](https://www.jianshu.com/p/2b18352b49d1 "https://www.jianshu.com/p/2b18352b49d1")
+
+【使用方式】
+
+**step1：根据接口 url 层级，创建 mock 用 json 文件**
+例如：接口 url 为 /demo1/list
+创建模拟请求成功的mock文件：/mock/data/success**/demo1/list.json**
+创建模拟请求失败的mock文件：/mock/data/fail**/demo1/list.json**
+
+**step2：统一在 api.js 进行接口配置**
+模拟请求成功，直接使用真实接口：const API = { list: '/demo1/list' }
+模拟请求失败，改造真实接口为：const API = { list: '**/fail**/demo1/list' }
+
+**step3：页面中使用真实的接口请求逻辑**
+```javascript
+import $api from '@/model/api.js'
+this.$get($api.list).then(res => { console.log('res:', res) })
+```
+&nbsp;
+
+关于json-server的具体设计方案，详见：[https://www.jianshu.com/p/2b18352b49d1](https://www.jianshu.com/p/2b18352b49d1 "https://www.jianshu.com/p/2b18352b49d1")
 &nbsp;
 
 #### 5.6 实用工具
@@ -408,8 +434,9 @@ yarn route
 #### 5.7 静态资源管理（本地图片、svg、css管理、打包后代码上传腾讯云cos）
 
 #### 5.8 开发支持
-（1）本地联调跨域解决 —— proxy代理方案+内网代理agent配置
-（2）命令行启动，模式区分设计
+（1）接口管理（api.js）
+（2）本地联调跨域解决 —— proxy代理方案+内网代理agent配置
+（3）命令行启动，模式区分设计
 #### 5.9 规范代码
 （1）.eslintrc 与 .editorconfig
 （2）pre-commit 检查
