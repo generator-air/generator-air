@@ -20,8 +20,8 @@ npm install -g generator-air
 yo air
 ```
 &nbsp;
+
 根据提示，按需选择。
-// 配每一步的截图及说明（特别是模板是否覆盖那里）
 &nbsp;
 
 ## 3.启动测试
@@ -98,9 +98,9 @@ npm run dev
 
 &nbsp;
 
-### 5.功能模块详解（// 功能、设计思想介绍 + 使用方式详述）
+### 5.功能模块详解
 #### 5.1 用户权限
-##### 5.1.1 第三方登录场景
+#### 5.1.1 第三方登录场景
 （1）整体流程
 ![image](./readmeImgs/login_flow.png)
 &nbsp;
@@ -170,13 +170,13 @@ $store.commit('menu/setMenu', menuList)
 关于 authority-filter 的详细说明，请参照：[authority-filter](https://www.npmjs.com/package/authority-filter "authority-filter")
 &nbsp;
 
-#####  5.1.2 本系统登录场景（开发完善中）
+####  5.1.2 本系统登录场景（开发完善中）
 （1）整体流程
 （2）用户信息管理
 （3）权限管理
 
 #### 5.2 菜单&路由&页面
-##### 5.2.1 菜单的设计
+#### 5.2.1 菜单的设计
 定义位置：model/menu.js 👇
 ```javascript
 const menus = [
@@ -216,14 +216,14 @@ const menus = [
 export default menus
 
 ```
-###### 【注意】
+**【注意】**
 根据我们的设计，**菜单的 url，应该只有一层**。即：定义为/demo，而非/demo/list。
 **这一层，作为一个命名空间。它之下的所有路径，对应这个菜单下的二级、三级...n级页面。**
 比如，/demo 是一个菜单页，类型为列表页。包含编辑、详情按钮。从这个入口进入的编辑、详情页，对应的路由，应该形如：/demo/edit、/demo/detail。
 这样，我们就可以根据路由的“命名空间”，确定菜单栏中的哪一个菜单，显示为高亮选中。
 &nbsp;
 
-##### 5.2.2 路由的设计
+#### 5.2.2 路由的设计
 项目中所有路由，统一放在 router 文件夹下。
 router下的每一个路由文件，**与菜单页一一对应**。也就是，**与命名空间一一对应**。
 每一个路由文件内，定义当前菜单页、以及它下属的二级、三级......n级页面的所有路由。
@@ -255,7 +255,7 @@ export default routerList
 ```
 &nbsp;
 
-##### 5.2.3 页面的管理
+#### 5.2.3 页面的管理
 所有页面，统一存放在 pages 文件夹下。
 按照我们的设计，**pages 下的每一个文件夹，对应一个菜单页**，内部存放菜单页.vue文件，和它下属的所有二级、三级......n级页面。那些既不是菜单页，又不是菜单页下属页面的页面，如 home 页、notFound 页，直接存放在 pages 下。
 
@@ -275,7 +275,7 @@ export default routerList
 &nbsp;
 
 #### 5.3 接口调用 —— mixin/request.js
-##### 5.3.1 使用demo
+#### 5.3.1 使用demo
 ```html
 <!-- list.vue -->
 <template>
@@ -300,7 +300,7 @@ export default {
 ```
 &nbsp;
 
-##### 5.3.2 支持功能
+#### 5.3.2 支持功能
 | 方法 | 调用方式 |
 | ------------ | ------------ |
 | $get | this.$get(url, params).then(rs => console.log('res:', res)) |
@@ -314,7 +314,7 @@ export default {
 如果需要在js中使用，手动import即可。import { $get, $request } from '@/mixin/request'
 &nbsp;
 
-##### 5.3.3 请求错误处理
+#### 5.3.3 请求错误处理
 对于请求错误的处理，我们设计了错误字典：model/errorDict.js。
 
 它看起来像这样：
@@ -339,6 +339,7 @@ export default {
 &nbsp;
 
 #### 5.4 日志监控模块
+我们选用Aegis进行日志监控。
 
 #### 简介
 
@@ -395,27 +396,25 @@ const aegis = new Aegis({
 
 ##### 5.4.2 分级上报
 
-###### info级别上报 
+###### info级别上报
 ```javascript
 this.$aegis.logI('aegis普通日志上报', report)
 ```
-上报info 等级的日志，不会影响 Aegis 评分，也不会触发 Aegis 告警。非常适合上报关键路径信息，当问题发生时，可以配合快速定位复现路径。 
+上报info 等级的日志，不会影响 Aegis 评分，也不会触发 Aegis 告警。非常适合上报关键路径信息，当问题发生时，可以配合快速定位复现路径。
 
-###### error级别上报 
+###### error级别上报
 ```javascript
-this.$aegis.logE('aegis异常日志上报', report)									
+this.$aegis.logE('aegis异常日志上报', report)
 ```
 上报error等级的日志，往往意味着页面出现了错误，当上报的 error 日志达到阈值时，Aegis 将会进行告警，帮助开发者尽早发现问题。另外，Aegis 每天都会给所有项目打分，上报的 error 日志数量是一个关键指标。
 
 ###### 上报测速日志
 ```javascript
-this.$aegis.report('www.test.com', report)									
+this.$aegis.report('www.test.com', report)
 ```
 
 上报测速日志,其中www.test.com替换成项目中需要上报的链接
 
-
-##### 5.4.3 能力扩展
 更多信息，可阅读aegis官网：[http://aegis.oa.com/](http://aegis.oa.com/ "http://aegis.oa.com")
 &nbsp;
 
@@ -426,7 +425,7 @@ this.$aegis.report('www.test.com', report)
 （我们提供的本地mock，默认启动在3001端口）
 &nbsp;
 
-##### 5.5.1 在线mock
+#### 5.5.1 在线mock
 【配置Demo】
 ```javascript
 // config.js
@@ -436,7 +435,7 @@ config.mock = 'https://www.fastmock.site/mock/5804566cbf92cb32bf29b622fdfe6138/w
 fastmock 官网传送门：[https://www.fastmock.site](https://www.fastmock.site/#/ "https://www.fastmock.site/#/")
 &nbsp;
 
-##### 5.5.2 本地mock
+#### 5.5.2 本地mock
 【配置Demo】
 ```javascript
 // config.js
@@ -482,7 +481,7 @@ this.$get($api.list).then(res => { console.log('res:', res) })
 &nbsp;
 
 #### 5.6 实用工具
-##### 5.6.1 页面创建：pageCreate
+#### 5.6.1 页面创建：pageCreate
 【使用方式】
 ```shell
 yarn page
@@ -494,7 +493,7 @@ yarn page
 ![image](./readmeImgs/page_create_2.png)
 &nbsp;
 
-##### 5.6.2 路由自动生成：routeCreate
+#### 5.6.2 路由自动生成：routeCreate
 【使用方式】
 ```shell
 yarn route
@@ -506,14 +505,210 @@ yarn route
 &nbsp;
 
 #### 5.7 静态资源管理（本地图片、svg、css管理、打包后代码上传腾讯云cos）
+#### 5.7.1 公共库
+我们对项目中使用到的公共库，进行了 webpack 的 externals 化。
+使用 cdn 资源引入这些库，可以有效减小项目打包后的代码体积。
+
+如果你添加了额外的公共库，并且也希望使用cdn资源引入，而不是将它们打包到项目代码中，那么你应该在 config.js 中进行相应的配置，修改 externals 属性。
+
+我们内置的 externals 看起来像这样：
+```javascript
+// 版本库外部引入文件路径
+config.externals = [
+	{
+		path: '/vue/2.6.10/vue.js',
+		packageName: 'vue',
+		variableName: 'Vue'
+	},
+	{
+		path: '/vuex/3.1.2/vuex.js',
+		packageName: 'vuex',
+		variableName: 'Vuex'
+	},
+	{
+		path: '/element-ui/2.12.0/theme-chalk/index.css'
+	}
+]
+```
+所用 cdn 资源，均来自 [https://lib.baomitu.com](https://lib.baomitu.com "https://lib.baomitu.com")
+
+方便起见，你需要的公共库，记得也去这里查找哦 😉
+&nbsp;
+
+#### 5.7.2 图片与公共样式
+png图片、svg图片、common less文件，均存放于 assets 文件夹。
+```javascript
+├── assets
+|  ├── css                       // 公共 css 文件
+|  |  ├── color.less         // 当前项目各种设计颜色定义
+|  |  └── u-demo.less     // 业务相关的公共样式示例
+|  ├── icon                     // 存放所有 svg 文件
+|  |  ├── clock.svg          // svg 示例
+|  |  └── gear.svg          // svg 示例
+|  ├── image                  // 存放所有png、jpg等大图
+|  |  └── logo.png         // png 图片示例
+|  └── index.js              // 静态资源（svg+css）引用入口
+```
+main.js 引入 assets/index.js，从而使通用样式全局生效、svg图标全局可用。
+&nbsp;
+
+#### 5.7.3 打包后的静态资源上传cos
+我们默认支持腾讯云对象（cos）存储。
+
+【使用方式】
+配置config.js：
+```javascript
+const $urlJoin = require('url-join')
+// 使用 COS 的域名，以//开头，自动匹配站点协议
+config.cdnBase = '//cdn.xx.yy.com'
+// COS 上传的路径
+config.uploadUrl = '/2019/test-project'
+config.cdnRoot = $urlJoin(config.cdnBase, config.uploadUrl)
+// COS 上传配置模板
+config.uploadConfig = {
+	// 在腾讯云申请的 AppId
+	AppId: '',
+	// 配置腾讯云 COS 服务所需的 SecretId
+	SecretId: '',
+	// 配置腾讯云 COS 服务所需的 SecretKey
+	SecretKey: '',
+	// COS服务配置的存储桶名称
+	Bucket: '',
+	// 地域名称
+	Region: '',
+	// 上传cdn的路径。所有文件上传到这个路径下
+	prefix: config.uploadUrl
+}
+```
+
+配置 vue.config.js（默认已配置）：
+```javascript
+// 使用cos存储的静态资源引用路径
+const publicPath = process.env.NODE_ENV === 'production' ? $config.cdnRoot : '';
+```
+
+yarn build 打包后，执行** yarn upload **上传。
+&nbsp;
 
 #### 5.8 开发支持
-（1）接口管理（api.js）
-（2）本地联调跨域解决 —— proxy代理方案+内网代理agent配置
-（3）命令行启动，模式区分设计
+#### 5.8.1 接口管理 —— api.js
+为了方便接口的管理，我们设计了统一的接口管理文件：model/api.js
+
+它看起来像这样：
+
+```javascript
+// 统一的接口管理
+const API = {
+	getUserInfo: '/getUserInfo',
+	getList: '/list'
+}
+
+// 如果是开发模式，为接口路径手动添加./dev前缀，用于proxy代理匹配
+if (document.domain.indexOf('.com') === -1) {
+	Object.keys(API).forEach(key => {
+		API[key] = '/dev' + API[key]
+	})
+}
+
+export default API
+
+```
+
+我们在页面中，通过引入 API，读取 API.getUserInfo 来调用接口。
+
+这样的设计可以保证，当后台接口路径调整，统一修改 api.js即可。便于接口维护。
+&nbsp;
+
+#### 5.8.2 命令行启动，模式区分设计
+我们提供了两种启动模式：**开发模式 / 联调模式**。
+
+每种模式启动，都会自动生成 model/env.js 文件，并写入当前模式下的接口调用域名，如：
+```javascript
+// @param:domain 启动后切换环境后生成的域名
+const env = {};
+env.domain = "https://www.fastmock.site/mock/cfbff5d79bd9ff49a81e04dde80521e3/admin";
+module.exports = env;
+```
+&nbsp;
+
+（1）开发模式启动，调用 mock 接口
+```shell
+yarn dev
+```
+
+mock 地址，请在 config.js 中自行配置：
+```javascript
+config.mock = 'https://www.fastmock.site/mock/cfbff5d79bd9ff49a81e04dde80521e3/admin'
+```
+&nbsp;
+
+（2）联调模式启动
+```shell
+yarn debug
+```
+联调服务器地址，mock 地址，请在 config.js 中自行配置：
+```javascript
+config.debug = 'http://10.12.13.1:8000'
+```
+&nbsp;
+
+#### 5.8.3 本地联调代理配置
+如上 5.8.1 所示，我们在创建 api.js 时，会检测当前启动页面的域名。如果不是在包含 .com 的域名下启动，则认为是开发环境。我们手动为开发环境下的接口都添加了 /dev 前缀，同时，在 vue.config.js 中进行代理配置，从而解决联调场景下，localhost 发送的请求，被服务器判定为跨域，拒绝访问的问题。
+
+vue.config.js 配置如下：
+```javascript
+devServer: {
+	port: $config.devServerPort,
+	proxy: {
+		'/dev': {                            // 匹配带有/dev 前缀的请求
+			target: $env.domain,    // 根据启动模式，动态设置代理到的目标域名
+			changeOrigin: true,
+			pathRewrite: {
+				'^/dev': ''
+			},
+			logLevel: 'debug'
+		}
+	}
+}
+```
+&nbsp;
+
+如果你使用的公司内网，访问外部网站需要走代理。那么，在这里，你可能还需要进行一个配置，才可以成功拿到如 fastmock 这样的外部网站，返回的数据。
+
+```javascript
+// vue.config.js
+const HttpsProxyAgent = require('https-proxy-agent')
+// 【注意】请在本地，设置环境变量 HTTP_PROXY = '你的公司内网访问外部的代理服务器地址'
+const proxyServer = process.env.HTTP_PROXY;
+
+devServer: {
+	port: $config.devServerPort,
+	proxy: {
+		'/dev': {                            // 匹配带有/dev 前缀的请求
+			target: $env.domain,    // 根据启动模式，动态设置代理到的目标域名
+			// 解决内网代理问题。（如不需要代理，请删除以下agent代码）
+			agent: new HttpsProxyAgent(proxyServer),
+			changeOrigin: true,
+			pathRewrite: {
+				'^/dev': ''
+			},
+			logLevel: 'debug'
+		}
+	}
+}
+```
+&nbsp;
+
 #### 5.9 规范代码
-（1）.eslintrc 与 .editorconfig
-（2）pre-commit 检查
+#### 5.9.1 .eslintrc 与 .editorconfig
+我们制定了这款脚手架默认的开发规范，并为它配置了配套的 .editorconfig 格式化。如果你使用了 vscode 这样的编辑器，并安装了 editor 插件，你的代码会根据我们提供的 .editorconfig 自动格式化。
+当然，你也可以自定义属于你们团队的代码规范。
+&nbsp;
+
+#### 5.9.2 .pre-commit 检查
+为了保证提交代码的规范性，我们在 package.json 中配置了 pre-commit 检查。在你执行 git commit 的时候，自动执行代码规范性检查，检查通过的代码，才可以成功提交，如此，进一步控制了代码的规范性。
+&nbsp;
+
 ## · 管理端-react（开发中）
 ## · 小程序-原生（开发中）
 ## · 小程序-taro（开发中）
