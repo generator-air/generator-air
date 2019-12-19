@@ -104,22 +104,427 @@ npm run dev
 <br>
 
 ### 4.快速开始
-#### 4.1 菜单定义（model/menu.js。命名空间的设计规则）
-#### 4.2 页面创建（pageCreate。默认文件夹结构的设计）
-#### 4.3 路由生成（routeCreate）
-#### 4.4 权限字典（model/authDict）
-#### 4.5 api.js 接口定义（model/api.js）
-#### 4.6 权限控制（router/index.js + 页面操作控制）
-#### 4.7 登录逻辑（区分第三方登录/本系统登录。errorDict.js配置/导航守卫）
+#### 4.1 页面创建
+
+```shell
+yarn page
+```
+
+按需选择：
+
+![image](./readmeImgs/page_create_1.png)
+
+执行生成后，效果如下：
+
+![image](./readmeImgs/page_create_1.png)
+
+<br>
+**【注意点】**
+按照我们的设计，pages 下的文件夹，应该与菜单页一一对应。
+
+这里，比如我们要创建一个列表页，它是一个菜单页。
+那么，页面路径应该输入：**demo/list 或 demo/index**。
+**请注意菜单页的命名。如果你跟随我们的文档，接下来使用 routeCreate 生成路由，那么菜单页的命名只能是 list.vue / index.vue。**
+
+如果这个菜单页上存在“编辑”“详情”按钮，也就是，存在二级页面入口。
+那么，在创建它下属的“编辑”“详情”页时，你应该这样定义页面路径：demo/edit、demo/detail。
+
+<br>
+当你把需要的所有页面都创建完成，就可以执行下一步，愉快地进行路由的自动生成啦~
+当然，如果后面还有新增的页面，也可以创建后，再次执行路由的生成哦 😉
+
+<br>
+
+#### 4.2 路由生成
+
+```shell
+yarn route
+```
+
+![image](./readmeImgs/route_create.png)
+
+<br>
+按照我们当前模拟的场景，这是我们第一次创建路由。因此，选择覆盖/不覆盖，皆可。
+执行后，你会得到与 pages 下文件夹一一对应的所有路由文件。也就是，与菜单页一一对应。
+<br>
+
+以内置 demo 为例。pages 文件夹结构如下：
+
+![image](./readmeImgs/pages.png)
+
+routeCreate 生成的路由文件如下：
+
+![image](./readmeImgs/router.png)
+
+<br>
+
+【注意点】
+（1）routeCreate 不会处理直接创建在 pages 下的页面。这些页面的路由，需要开发者在 router/index.js 中手动定义。如内置的 home.vue、notFound.vue 页面。
+
+（2）根据我们的设计，**每一个菜单页，固定为一层路由**，对应 pages 下的文件夹名称。这个路由作为一个**命名空间**，用于菜单栏的选中态判断。
+
+<br>
+** 如果你不想使用我们的 routeCreate，而选择手动创建路由，那么你需要遵循以下两点规范：
+（1）菜单页的路由，定义为一个命名空间。比如：/demo，当然，也可以是 /demo/index。
+（2）菜单页的下级页面路由，在这个命名空间下追加。比如：二级页面 /demo/edit，三级页面 /demo/edit/preview。或二级页面 /demo/index/edit，三级页面 /demo/index/edit/preview **
+
+<br>
+
+#### 4.3 菜单定义
+
+```javascript
+// model/menu.js —— 根据如下内置示例，配置项目的菜单
+const menus = [
+	{
+		title: '操作过滤',
+		icon: 'clock',
+		url: '/demo1'
+	},
+	{
+		title: '工具示例',
+		icon: 'gear',
+		submenu: [
+			{
+				title: '使用示例',
+				url: '/demo2'
+			}
+		]
+	},
+	{
+		title: '组件示例',
+		icon: 'clock',
+		submenu: [
+			{
+				title: '数据管理',
+				icon: 'clock',
+				submenu: [
+					{
+						title: '数据列表',
+						url: '/demo3'
+					}
+				]
+			}
+		]
+	},
+]
+
+export default menus
+
+```
+
+**【注意点】**
+
+我们已经创建完所有路由，这里，你只需去 router 下的路由文件中，寻找你需要的菜单页路由，并配置在 model/menu.js 中即可。
+
+<br>
+#### 4.4 权限字典
+
+定义权限字典（model/authDict）：
+
+```javascript
+const dictionary = {
+	// 101：角色id（roleId）
+	101: [
+		{
+			path: '/demo1',   // 有权访问的路由
+			operations: ['create', 'edit', 'delete']   // 对当前路由有权进行的操作
+		},
+		{
+			path: '/demo2',
+			operations: ['create', 'edit']
+		},
+		{
+			path: '/demo3',
+			operations: ['create', 'edit', 'delete']
+		},
+		{
+			path: '/demo3/edit',
+			operations: ['create', 'edit']
+		},
+		{
+			path: '/demo3/detail',
+			operations: ['delete']
+		}
+	],
+	102: [
+		{
+			path: '/demo1/edit',
+			operations: ['edit', 'delete']
+		},
+		{
+			path: '/demo2'
+		}
+	]
+}
+
+export default dictionary;
+
+```
+
+**【注意点】**
+
+（1）roleId 从获取用户信息接口拿到。请自行与后台同学对接确认。
+（2）operations 字段可选。如果不需要进行页面操作权限控制，则可以不定义 operations。
+（3）operations 数组的字段值，由开发者自行定义
+
+<br>
+#### 4.5 api.js 接口定义
+
+model/api.js：
+
+```javascript
+// 统一的接口管理
+const API = {
+	getUserInfo: '/getUserInfo'
+}
+
+// 如果是开发模式，为接口路径手动添加./dev前缀，用于proxy代理匹配
+if (document.domain.indexOf('.com') === -1) {
+	Object.keys(API).forEach(key => {
+		API[key] = '/dev' + API[key]
+	})
+}
+
+export default API
+```
+
+需要调用的后台接口，统一在 api.js 里定义。并在页面中，通过引用 api.js 进行调用。
+
+<br>
+#### 4.6 权限控制
+
+路由与菜单的权限控制逻辑，脚手架已经内置。
+因此，对于权限控制，你只需要按需进行页面操作权限的过滤操作即可。
+<br>
+
+脚手架内置的权限处理（router/index.js）：
+
+```javascript
+import $vue from 'vue'
+import $vueRouter from 'vue-router'
+import $Auth from 'authority-filter'  // npm 包
+import $request from '../mixin/request'
+import $authDic from '../model/authDict'
+import $demo1 from './demo1'
+import $demo2 from './demo2'
+import $demo3 from './demo3'
+import $allMenus from '../model/menu'
+import $store from '../vuex/index'
+import $api from '../model/api'
+
+const $home = () => import(/* webpackChunkName: "home" */ 'pages/home')
+const $notFound = () => import(/* webpackChunkName: "notFound" */ 'pages/notFound')
+
+$vue.use($vueRouter)
+
+const router = new $vueRouter()
+
+// 拉取用户信息（【Replace】需替换为实际的接口地址）
+$request.$get($api.getUserInfo).then(res => {
+	if (res && res.data) {
+		// 全局存储用户信息
+		$store.commit('user/setUserInfo', res.data)
+		// 将权限字典 + roleId传入权限组件
+		const auth = new $Auth($authDic, res.data.roleId)
+		// 全局存储 auth 对象
+		$store.commit('user/setAuth', auth)
+		// 获取经过权限过滤后的路由
+		const routerList = auth.getRouterList([...$demo1, ...$demo2, ...$demo3])
+		router.addRoutes([
+			...routerList,
+			{
+				path: '/',
+				redirect: '/home'
+			},
+			{
+				path: '/home',
+				component: $home
+			},
+			{
+				path: '*',
+				component: $notFound
+			}
+		])
+		// 获取经过权限过滤后的菜单
+		const menuList = auth.getMenuList($allMenus)
+		// 权限过滤后的菜单保存至vuex
+		$store.commit('menu/setMenu', menuList)
+	}
+})
+```
+
+<br>
+对页面的操作权限进行过滤，请参考 pages/demo1/list.vue：
+
+```html
+<template lang="pug">
+	.p-page
+		.title 页面操作过滤demo
+		.buttons
+			//- 这里读取的字段，取决于 authDict.js 内的定义
+			el-button(v-if="operations.includes('create')") 创建
+			el-button(v-if="operations.includes('edit')") 编辑
+			el-button(v-if="operations.includes('delete')") 删除
+</template>
+
+<script>
+import { mapState } from 'vuex'
+
+export default {
+	computed: {
+		...mapState('user', [
+			'auth'
+		])
+	},
+	data() {
+		return {
+			operations: []
+		}
+	},
+	methods: {
+
+	},
+	mounted() {
+		this.operations = this.auth.getPageOperations(this.$route.path)
+	}
+}
+</script>
+
+<style lang="less">
+.p-page {
+	.title {
+		margin-bottom: 20px;
+	}
+}
+</style>
+
+```
+
+<br>
+
+#### 4.7 登录逻辑
+#### 4.7.1 第三方登录
+
+我们已经在 router/index.js 中为你写好了登录、权限的控制逻辑。具体逻辑，可阅读 5.1 章节。
+
+这里你需要做的，只是配置一下 model/errorDict.js，写明第三方登录的跳转地址即可。
+
+比如，httpCode 403，并且后台返回错误码 code: 3000 时，需要跳转到登录页。那么你需要这样配置：
+
+```javascript
+export default {
+	403: {
+		3000: () => location.href = 'http://mp.weixin.qq.com'
+	}
+}
+
+```
+
+<br>
+
+#### 4.7.2 本系统登录（开发完善中）
+
 #### 4.8 请求错误码字典（errorDict）配置
-#### 4.9 启动日志监控（让兴哥写）
-#### 4.10 启动开发（yarn dev）
-#### 4.11 启动联调（yarn debug + debug ip/域名配置）
+除登录场景外，你还可以配置其他需要前端特殊处理的错误场景。具体配置方法，可阅读 5.3.3 章节。
+
+<br>
+
+#### 4.9 启动日志监控
+
+（1）第一步：注册项目
+到 aegis.ivweb.io 注册，获取项目 id。
+<br>
+
+（2）第二步：将项目 id 添加到 aegis 中
+mixin/aegis.js：
+
+```javascript
+aegis = new Aegis({
+	id: 'xxx', // 在 aegis.qq.com 申请到的 id
+})
+```
+<br>
+
+（3）第三步：启用日志监控
+config.js：
+
+```javascriptt
+config.logReport = true // 日志全局开关
+```
+<br>
+
+（4）在需要监控的页面上调用：
+
+```javascript
+this.$aegis.logI('上报普通日志', report)
+this.$aegis.logE('上报错误日志', report)
+this.$aegis.report('上报测速日志', report)
+```
+<br>
+
+#### 4.10 启动开发
+
+```shell
+yarn dev
+```
+
+这里，读取 mock 接口。
+<br>
+
+#### 4.11 启动联调
+
+```shell
+yarn debug
+```
+
+这里，读取联调接口。
+<br>
+
 #### 4.12 项目部署
-（1）cdn 信息配置
-（2）打包（yarn build）
-（3）静态资源上传（yarn upload）
-（4）执行部署（scp xxx）
+
+（1）cos 信息配置
+
+```javascript
+const $urlJoin = require('url-join')
+// 使用 COS 的域名，以//开头，自动匹配站点协议
+config.cdnBase = '//cdn.xx.yy.com'
+// COS 上传的路径
+config.uploadUrl = '/2019/test-project'
+config.cdnRoot = $urlJoin(config.cdnBase, config.uploadUrl)
+// COS 上传配置模板
+config.uploadConfig = {
+	// 在腾讯云申请的 AppId
+	AppId: '',
+	// 配置腾讯云 COS 服务所需的 SecretId
+	SecretId: '',
+	// 配置腾讯云 COS 服务所需的 SecretKey
+	SecretKey: '',
+	// COS服务配置的存储桶名称
+	Bucket: '',
+	// 地域名称
+	Region: '',
+	// 上传cdn的路径。所有文件上传到这个路径下
+	prefix: config.uploadUrl
+}
+```
+
+（2）打包
+
+```shell
+yarn build
+```
+
+（3）静态资源上传
+
+```shell
+yarn upload
+```
+
+（4）执行部署
+
+通过 scp 等命令，将打包后的 index.html 上传到服务器。
+
+（5）完成
 
 <br>
 
@@ -479,8 +884,7 @@ this.$aegis.report('www.test.com', report)
 
 上报测速日志,其中www.test.com替换成项目中需要上报的链接
 
-更多信息，可阅读aegis官网：[http://aegis.oa.com/](http://aegis.oa.com/ "http://aegis.oa.com")
-
+更多信息，可阅读aegis官网：[http://aegis.oa.com](http://aegis.oa.com "http://aegis.oa.com")
 <br>
 
 #### 5.5 前后端分离 —— mock支持
@@ -593,7 +997,6 @@ yarn route
 <br>
 
 #### 5.7 静态资源管理
-
 #### 5.7.1 公共库
 
 我们对项目中使用到的公共库，进行了 webpack 的 externals 化。
