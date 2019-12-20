@@ -45,13 +45,13 @@ npm run dev
 
 出现下图，则启动成功：
 
-![image](./assets/npm_run_dev.png)
+![image](assets/npm_run_dev.png)
 
 <br>
 
 启动成功后，浏览器访问 localhost:8090
 
-![image](./assets/home.png)
+![image](assets/home.png)
 
 <br>
 
@@ -65,7 +65,7 @@ npm run dev
 
 ### 2.启动效果：
 
-![image](./assets/home.png)
+![image](assets/home.png)
 
 <br>
 
@@ -112,11 +112,11 @@ yarn page
 
 按需选择：
 
-![image](./assets/page_create_1.png)
+![image](assets/page_create_1.png)
 
 执行生成后，效果如下：
 
-![image](./assets/page_create_1.png)
+![image](assets/page_create_1.png)
 
 <br>
 **【注意点】**
@@ -141,7 +141,7 @@ yarn page
 yarn route
 ```
 
-![image](./assets/route_create.png)
+![image](assets/route_create.png)
 
 <br>
 按照我们当前模拟的场景，这是我们第一次创建路由。因此，选择覆盖/不覆盖，皆可。
@@ -150,11 +150,11 @@ yarn route
 
 以内置 demo 为例。pages 文件夹结构如下：
 
-![image](./assets/pages.png)
+![image](assets/pages.png)
 
 routeCreate 生成的路由文件如下：
 
-![image](./assets/router.png)
+![image](assets/router.png)
 
 <br>
 
@@ -278,7 +278,7 @@ const API = {
 	getUserInfo: '/getUserInfo'
 }
 
-// 如果是开发模式，为接口路径手动添加./dev前缀，用于proxy代理匹配
+// 如果是开发模式，为接口路径手动添加dev前缀，用于proxy代理匹配
 if (document.domain.indexOf('.com') === -1) {
 	Object.keys(API).forEach(key => {
 		API[key] = '/dev' + API[key]
@@ -303,14 +303,14 @@ export default API
 import $vue from 'vue'
 import $vueRouter from 'vue-router'
 import $Auth from 'authority-filter'  // npm 包
-import $request from '../mixin/request'
-import $authDic from '../model/authDict'
-import $demo1 from './demo1'
-import $demo2 from './demo2'
-import $demo3 from './demo3'
-import $allMenus from '../model/menu'
-import $store from '../vuex/index'
-import $api from '../model/api'
+import $request from '.mixin/request'
+import $authDic from '.model/authDict'
+import $demo1 from 'demo1'
+import $demo2 from 'demo2'
+import $demo3 from 'demo3'
+import $allMenus from '.model/menu'
+import $store from '.vuex/index'
+import $api from '.model/api'
 
 const $home = () => import(/* webpackChunkName: "home" */ 'pages/home')
 const $notFound = () => import(/* webpackChunkName: "notFound" */ 'pages/notFound')
@@ -536,7 +536,7 @@ yarn upload
 
 （1）整体流程
 
-![image](./assets/login_flow.png)
+![image](assets/login_flow.png)
 
 <br>
 
@@ -575,11 +575,11 @@ export default {
 ```javascript
 // router/index.js
 import $Auth from 'authority-filter'
-import $authDic from '../model/authDict'
-import $demo1 from './demo1'
-import $demo2 from './demo2'
-import $demo3 from './demo3'
-import $allMenus from '../model/menu'
+import $authDic from '.model/authDict'
+import $demo1 from 'demo1'
+import $demo2 from 'demo2'
+import $demo3 from 'demo3'
+import $allMenus from '.model/menu'
 
 // $authDic 是需要开发者自行定义的权限字典。roleId 是从 userInfo 中获取的用户角色 id
 const auth = new $Auth($authDic, roleId)
@@ -823,7 +823,7 @@ Aegis是腾讯开源的一站式前端监控解决方案，涵盖了日志上报
 - 当前版本的aegis的数据采用离线计算的方式。为了提高数据的实效性，将离线计算的事件粒度缩减到分钟级别，能够提供短时的数据，
 帮助开发者快速响应问题。另外，也提供按天的统计数据，帮助开发者把控大盘，掌握全局视角。
 
-  ![image](./assets/aegis.png)
+  ![image](assets/aegis.png)
 
 - 目前 aegis 平均每天为用户处理约8千万次pv事件和8千万条日志以及1亿多条测速数据。单机 TPS 为 5K 左右，服务器支持弹性扩容，
 即使业务扩张也可以维持良好的鲁棒性。
@@ -972,13 +972,13 @@ this.$get($api.list).then(res => { console.log('res:', res) })
 yarn page
 ```
 
-![image](./assets/page_create_1.png)
+![image](assets/page_create_1.png)
 
 <br>
 
 效果如图：
 
-![image](./assets/page_create_2.png)
+![image](assets/page_create_2.png)
 
 <br>
 
@@ -990,7 +990,7 @@ yarn page
 yarn route
 ```
 
-![image](./assets/route_create.png)
+![image](assets/route_create.png)
 
 我们支持全覆盖式路由创建、附加式路由创建，两种选择。
 
@@ -1108,7 +1108,7 @@ const API = {
 	getList: '/list'
 }
 
-// 如果是开发模式，为接口路径手动添加./dev前缀，用于proxy代理匹配
+// 如果是开发模式，为接口路径手动添加dev前缀，用于proxy代理匹配
 if (document.domain.indexOf('.com') === -1) {
 	Object.keys(API).forEach(key => {
 		API[key] = '/dev' + API[key]
