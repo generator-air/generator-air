@@ -56,10 +56,12 @@ module.exports = class extends Generator {
 			shell.exit(1);
 		}
 	}
+
 	// 统一的脚手架模板复制入口
 	_fileCopy() {
 		this._normalFileCopy();
 		this._specialFileCopy();
+		this._packageJsonCopy();
 	}
 
 	// configs 下文件夹复制
@@ -85,34 +87,62 @@ module.exports = class extends Generator {
 			this.answers
 		);
 	}
+
 	// 脚手架模板，.开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
 	_specialFileCopy() {
-		// fs.exists(`${this.sourceRoot()}/${this.seedName}/configs`, exists => {
-		// 	// 如果存在配置文件夹
-		// 	if (exists) {
-
-		const files = fs.readdirSync(this.templatePath(`${this.seedName}/configs`));
-		// 将configs下以_开头的配置文件逐个格式化成以.开头
-		files.forEach(file => {
-			const stats = file.lstatSync(`./${file}`);
-			const isDirectory = stats.isDirectory();
-			if (isDirectory) {
-				if (this.answers.mockType === 'local' && file === 'mockConfig') {
-					this._configFolderCopy('mockConfig');
-				} else {
-					this._configFolderCopy('commonConfig');
-				}
-			} else {
-				const formatFile = file.replace('_', '.');
-				this.fs.copyTpl(
-					this.templatePath(`${this.seedName}/configs/${file}`),
-					this.destinationPath(`${this.answers.projectName}/${formatFile}`)
-				);
+		fs.exists(`${this.sourceRoot()}/${this.seedName}/configs`, exists => {
+			// 如果存在配置文件夹（考虑后续支持其他版本脚手架，可能会不存在configs文件夹）
+			if (exists) {
+				const files = fs.readdirSync(this.templatePath(`${this.seedName}/configs`));
+				// 将configs下以_开头的配置文件逐个格式化成以.开头
+				files.forEach(file => {
+					const stats = fs.lstatSync(`${this.seedName}/configs/${file}`);
+					const isDirectory = stats.isDirectory();
+					if (isDirectory) {
+						if (this.answers.mockType === 'local' && file === 'mockConfig') {
+							this._configFolderCopy('mockConfig');
+						} else {
+							this._configFolderCopy('commonConfig');
+						}
+					} else {
+						const formatFile = file.replace('_', '.');
+						this.fs.copyTpl(
+							this.templatePath(`${this.seedName}/configs/${file}`),
+							this.destinationPath(`${this.answers.projectName}/${formatFile}`)
+						);
+					}
+				});
 			}
 		});
-			// }
-		// });
 	}
+
+	// package.json 生成
+	_packageJsonCopy() {
+		// 动态写入 package.json
+		const name = this.answers.projectName;
+		const devDependencies = {};
+		if (this.answers.mockType === 'local') {
+			devDependencies['json-server'] = '^0.15.1';
+		}
+		const pkgJson = {
+			name,
+			devDependencies,
+			"lint-staged": {
+				"*.js": [
+					"vue-cli-service lint",
+					"git add"
+				],
+				"*.vue": [
+					"vue-cli-service lint",
+					"git add"
+				]
+			},
+			"pre-commit": "lint"
+		};
+		// this.destinationPath 指定要写入 pkgJson 的目标 package.json
+		this.fs.extendJSON(this.destinationPath(`${this.answers.projectName}/package.json`), pkgJson);
+	}
+
 	// configs 配置文件模板删除
 	_configsDelete() {
 		shell.rm('-rf', `${this.destinationRoot()}/${this.answers.projectName}/configs`);
@@ -133,11 +163,13 @@ module.exports = class extends Generator {
 			this.destinationRoot(path.resolve(process.cwd()));
 		});
 	}
+
 	// No2
 	async prompting() {
 		this.log('prompting:', 2);
 		this.answers = await this.prompt(questions);
 	}
+
 	// No3
 	configuring() {
 		this.log('configuring:', 3);
@@ -147,10 +179,12 @@ module.exports = class extends Generator {
 			this._getGitRepository(answers);
 		}
 	}
+
 	// No4
 	default() {
 		this.log('default:', 4);
 	}
+
 	// No5
 	writing() {
 		this.log('writing:', 5);
@@ -176,18 +210,13 @@ module.exports = class extends Generator {
 			}
 			done();
 		});
-
-		// 动态写入 package.json
-		// const pkgJson = {
-		// 	dependencies: {}
-		// };
-		// this.destinationPath 指定要写入 pkgJson 的目标 package.json
-		// this.fs.extendJSON(this.destinationPath(`public/${this.seedName}/package.json`), pkgJson);
 	}
+
 	// No6
 	conflicts() {
 		this.log('conflicts:', 6);
 	}
+
 	// No7
 	install() {
 		this.log('install:', 7);
@@ -201,6 +230,7 @@ module.exports = class extends Generator {
 			this.npmInstall();
 		}
 	}
+
 	// No8
 	end() {
 		this.log('end:', 8);

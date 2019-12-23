@@ -105,7 +105,7 @@ const questions = [
 		type: 'input',
 		name: 'projectName',
 		message: '请输入项目名称',
-		default: 'quyu-project'
+		default: 'my-project'
 	},
 	{
 		type: 'list',
