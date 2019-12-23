@@ -62,6 +62,17 @@ module.exports = class extends Generator {
 		this._specialFileCopy();
 	}
 
+	// configs 下文件夹复制
+	_configFolderCopy(folderName) {
+		const files = fs.readdirSync(this.templatePath(`${this.seedName}/configs/${folderName}`));
+		files.forEach(file => {
+			this.fs.copyTpl(
+				this.templatePath(`${this.seedName}/configs/${folderName}/${file}`),
+				this.destinationPath(`${this.answers.projectName}/${file}`)
+			);
+		});
+	}
+
 	// 脚手架模板，普通文件及文件夹复制
 	_normalFileCopy() {
 		// 复制模板文件夹下的内容，到目标文件夹（注：这里无法复制.开头的文件。如.eslintrc）
@@ -76,20 +87,31 @@ module.exports = class extends Generator {
 	}
 	// 脚手架模板，.开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
 	_specialFileCopy() {
-		fs.exists(`${this.sourceRoot()}/${this.seedName}/configs`, exists => {
-			// 如果存在配置文件夹
-			if (exists) {
-				const files = fs.readdirSync(this.templatePath(`${this.seedName}/configs`));
-				// 将configs下以_开头的配置文件逐个格式化成以.开头
-				files.forEach(file => {
-					const formatFile = file.replace('_', '.');
-					this.fs.copyTpl(
-						this.templatePath(`${this.seedName}/configs/${file}`),
-						this.destinationPath(`${this.answers.projectName}/${formatFile}`)
-					);
-				});
+		// fs.exists(`${this.sourceRoot()}/${this.seedName}/configs`, exists => {
+		// 	// 如果存在配置文件夹
+		// 	if (exists) {
+
+		const files = fs.readdirSync(this.templatePath(`${this.seedName}/configs`));
+		// 将configs下以_开头的配置文件逐个格式化成以.开头
+		files.forEach(file => {
+			const stats = file.lstatSync(`./${file}`);
+			const isDirectory = stats.isDirectory();
+			if (isDirectory) {
+				if (this.answers.mockType === 'local' && file === 'mockConfig') {
+					this._configFolderCopy('mockConfig');
+				} else {
+					this._configFolderCopy('commonConfig');
+				}
+			} else {
+				const formatFile = file.replace('_', '.');
+				this.fs.copyTpl(
+					this.templatePath(`${this.seedName}/configs/${file}`),
+					this.destinationPath(`${this.answers.projectName}/${formatFile}`)
+				);
 			}
 		});
+			// }
+		// });
 	}
 	// configs 配置文件模板删除
 	_configsDelete() {

@@ -106,6 +106,18 @@ const questions = [
 		name: 'projectName',
 		message: '请输入项目名称',
 		default: 'quyu-project'
+	},
+	{
+		type: 'list',
+		name: 'mockType',
+		message: '请选择您期望使用的mock方式',
+		choices: [{
+			name: '在线mock',
+			value: 'online'
+		}, {
+			name: '本地mock',
+			value: 'local'
+		}]
 	}
 ];
 
