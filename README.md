@@ -16,6 +16,10 @@ generator-air —— 有态度、有质量、无重量的脚手架生成器。
 ## 1.安装
 
 ```shell
+npm install -g yo
+```
+
+```shell
 npm install -g generator-air
 ```
 
