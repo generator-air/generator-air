@@ -437,17 +437,53 @@ export default {
 
 #### 4.9 启动日志监控
 
-（1）第一步：注册项目
-到 aegis.ivweb.io 注册，获取项目 id。
+（1）第一步：部署管理后台
+
+下载数据库文件：https://github.com/BetterJS/badjs-web/tree/master/db，导入到你服务器上
+进入mysql命令行
+执行
+```javascript
+source /create.sql
+```
+ 另外要安装mongodb
+
+参考：https://www.runoob.com/mongodb/mongodb-linux-install.html
+
+下载运行docker镜像
+```javascript
+
+// 下载images
+docker pull caihuijigood/badjs-docker
+
+// 启动 需要替换ip为你服务器的地址
+docker run -i -d -p 80:80 -p 8081:8081 docker.io/caihuijigood/badjs-docker bash badjs mysql=mysql://root@{your server ip}:3306/badjs mongodb=mongodb://{your server ip}:27017/test
+```
+
+- 访问http://{your server ip}:8081/ ，进行项目管理
+- 安装完成后，使用默认的超级帐号 admin/admin 进入
+- 登录成功后，点击右上角的“我的业务”进入管理界面，点击"申请业务"
+- 申请成功后，点击"管理" -> "申请列表" 对自己的业务进行审核通过。
 <br>
 
-（2）第二步：将项目 id 添加到 aegis 中
-mixin/aegis.js：
+（2）第二步：将项目 id 添加到 badjs 中
+mixin/badjs.js：
 
 ```javascript
-aegis = new Aegis({
-	id: 'xxx', // 在 aegis.qq.com 申请到的 id
-})
+bjReport = badjs.init({
+    id: 'xxx',                               // 上报 id, 不指定 id 将不上报
+    delay: 1000,                          // 延迟多少毫秒，合并缓冲区中的上报（默认）
+    url: "//{your server ip}/badjs",         // 指定上报地址
+    ignore: [/Script error/i],            // 忽略某个错误
+    random: 1,                            // 抽样上报，1~0 之间数值，1为100%上报（默认 1）
+    repeat: 5,                            // 重复上报次数(对于同一个错误超过多少次不上报)
+    onReport: function (id, errObj) {
+        console.log(id, errObj)
+    },     // 当上报的时候回调。 id: 上报的 id, errObj: 错误的对象
+    submit: null,                         // 覆盖原来的上报方式，可以自行修改为 post 上报等
+    ext: {},                              // 扩展属性，后端做扩展处理属性。例如：存在 msid 就会分发到 monitor,
+    offlineLog: false,                   // 是否启离线日志 [默认 false]
+    offlineLogExp: 5,                    // 离线有效时间，默认最近5天
+});
 ```
 <br>
 
@@ -462,11 +498,17 @@ config.logReport = true // 日志全局开关
 （4）在需要监控的页面上调用：
 
 ```javascript
-this.$aegis.logI('上报普通日志', report)
-this.$aegis.logE('上报错误日志', report)
-this.$aegis.report('上报测速日志', report)
+ this.$bjReport.report('badjs手动日志上报', value)
+ this.$bjReport.logI('badjs普通日志上报', value)
+ this.$bjReport.logD('badjs实时上报，跟踪问题; 不存入存储', value)
+ this.$bjReport.offline('badjs离线日志记录', value)
 ```
 <br>
+（5）查看监控结果
+
+访问http://{your server ip}:8081/
+
+![image](assets/aegis.png)
 
 #### 4.10 启动开发
 
