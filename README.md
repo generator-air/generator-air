@@ -439,7 +439,9 @@ export default {
 
 （1）第一步：部署管理后台
 
-下载数据库文件：https://github.com/BetterJS/badjs-web/tree/master/db，导入到你服务器上
+下载数据库文件：https://github.com/BetterJS/badjs-web/tree/master/db
+
+导入到你服务器上
 进入mysql命令行
 执行
 
