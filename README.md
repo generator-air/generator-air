@@ -471,18 +471,6 @@ mixin/badjs.js：
 ```javascript
 bjReport = badjs.init({
     id: 'xxx',                               // 上报 id, 不指定 id 将不上报
-    delay: 1000,                          // 延迟多少毫秒，合并缓冲区中的上报（默认）
-    url: "//{your server ip}/badjs",         // 指定上报地址
-    ignore: [/Script error/i],            // 忽略某个错误
-    random: 1,                            // 抽样上报，1~0 之间数值，1为100%上报（默认 1）
-    repeat: 5,                            // 重复上报次数(对于同一个错误超过多少次不上报)
-    onReport: function (id, errObj) {
-        console.log(id, errObj)
-    },     // 当上报的时候回调。 id: 上报的 id, errObj: 错误的对象
-    submit: null,                         // 覆盖原来的上报方式，可以自行修改为 post 上报等
-    ext: {},                              // 扩展属性，后端做扩展处理属性。例如：存在 msid 就会分发到 monitor,
-    offlineLog: false,                   // 是否启离线日志 [默认 false]
-    offlineLogExp: 5,                    // 离线有效时间，默认最近5天
 });
 ```
 <br>
@@ -849,37 +837,27 @@ export default {
 
 <br>
 
-#### 5.4 日志监控模块 —— Aegis
+#### 5.4 日志监控模块 —— Badjs
 
 #### 简介
 
-Aegis是腾讯开源的一站式前端监控解决方案，涵盖了日志上报，错误监控，性能监控，资源测速等功能。
+Badjs是腾讯开源的一站式前端监控解决方案，涵盖了日志上报，错误监控，性能监控，资源测速等功能。
 主要提供基础数据的上报，支持无打点首屏测速、无侵入式资源测速、CGI测速、白名单机制、离线日志等先进特性。
 通过自动监控前端错误，在错误发生时上报错误的具体情况，协助开发者快速定位问题。
 
 #### 优势
 
-- 完全基于 Node 的海量数据处理中间件，针对海量数据进行多维度的分析，对于前端开发者十分友好。
 
-- 调用方便，只需在全局初始化aegis实例，将会监听所有的 API 请求，并把响应内容全量上报至后端服务
+- 一站式体系化解决方案：业务只需要简单的配置，引入上报文件，即可实现脚本错误上报，每日统计邮件跟踪方便。
+- 可视化查询系统，快速定位错误信息：web应用程序脚本数量庞大，开发人员在如此之多的脚本中定位某个问题变得困难。BadJS能够巧妙定位错误脚本代码，进行反馈。通过各种查询条件，快速找到详细错误日志。
+- 跨域、Script Error等棘手问题不再是难题：tryjs帮你发现一切。
+- 真实用户体验监控与分析：通过浏览器端真实用户行为与体验数据监控，为您提供JavaScript、AJAX请求错误诊断和页面加载深度分析帮助开发人员深入定位每一个问题细节。即使没有用户投诉，依然能发现隐蔽bug，主动提升用户体验。
+- 用户行为分析：细粒度追踪真实的用户行为操作及流程，前端崩溃、加载缓慢及错误问题，可关联到后端进行深度诊断。
+- 产品质量的保障：浏览器百花齐放，用户环境复杂，巨大的差异导致开发人员难以重现用户遇到的问题。无法像后台一样上报所有用户操作日志。通过BadJS，上报用户端脚本错误，为产品质量保驾护航。
 
-- 在使用 aegis 时无需在业务代码中打点或者做任何其他操作，可以做到与业务代码充分解耦。
+![image](assets/badjs.png)
 
-- 当开启资源测速时，aegis 将会自动监听页面资源加载情况（耗费时长、成功率等），并在不影响前端性能的前提下收集前端的性能数据，
-快速定位性能短板，提升用户体验。
 
-- 当前版本的aegis的数据采用离线计算的方式。为了提高数据的实效性，将离线计算的事件粒度缩减到分钟级别，能够提供短时的数据，
-帮助开发者快速响应问题。另外，也提供按天的统计数据，帮助开发者把控大盘，掌握全局视角。
-
-  ![image](assets/log.png)
-
-- 目前 aegis 平均每天为用户处理约8千万次pv事件和8千万条日志以及1亿多条测速数据。单机 TPS 为 5K 左右，服务器支持弹性扩容，
-即使业务扩张也可以维持良好的鲁棒性。
-
-- Aegis 目前提供包括监控、告警、日报、报表、白名单配置、数据查询等开发者服务，与企业微信、邮件系统打通，提供及时、快速的消息反馈。
-同时提供aegis开发者平台(https://aegis.ivweb.io)，是专为开发者设计的一站式项目周期管理、项目监控平台，在此完成项目申请并接入前端SDK之后，
-即可快速查看相关项目数据信息。平台从开发者角度出发，聚焦于发现问题和提高效率，用顺应直觉的交互及直观的图表，
-帮助开发者洞悉存在于数据背后的未知。
 
 #### 5.4.1 使用demo
 
@@ -893,17 +871,28 @@ Aegis是腾讯开源的一站式前端监控解决方案，涵盖了日志上报
 config.logReport = true
 ```
 
-初始化aegis实例
+初始化Badjs实例
 
 ```javascript
-const aegis = new Aegis({
-    id: 0, // 在 aegis.ivweb.io 申请到的 项目id
-    reportApiSpeed: true,
-    reportAssetSpeed: true
-})
+const bjReport = badjs.init({
+    id: 'xxx',                               // 上报 id, 不指定 id 将不上报
+    delay: 1000,                          // 延迟多少毫秒，合并缓冲区中的上报（默认）
+    url: "//{your server ip}/badjs",         // 指定上报地址
+    ignore: [/Script error/i],            // 忽略某个错误
+    random: 1,                            // 抽样上报，1~0 之间数值，1为100%上报（默认 1）
+    repeat: 5,                            // 重复上报次数(对于同一个错误超过多少次不上报)
+    onReport: function (id, errObj) {
+        console.log(id, errObj)
+    },     // 当上报的时候回调。 id: 上报的 id, errObj: 错误的对象
+    submit: null,                         // 覆盖原来的上报方式，可以自行修改为 post 上报等
+    ext: {},                              // 扩展属性，后端做扩展处理属性。例如：存在 msid 就会分发到 monitor,
+    offlineLog: false,                   // 是否启离线日志 [默认 false]
+    offlineLogExp: 5,                    // 离线有效时间，默认最近5天
+});
+
 ```
 
-将reportApiSpeed和reportAssetSpeed配置为true时，Aegis 将会自动收集页面的API、静态资源请求状况，并上报至 Aegis 后端服务。
+将reportApiSpeed和reportAssetSpeed配置为true时，Badjs 将会自动收集页面的API、静态资源请求状况，并上报至 Badjs 后端服务。
 
 
 #### 5.4.2 分级上报
@@ -911,28 +900,37 @@ const aegis = new Aegis({
 ###### info级别上报
 
 ```javascript
-this.$aegis.logI('aegis普通日志上报', report)
+this.$bjReport.logI('Badjs普通日志上报', report)
 ```
 
-上报info 等级的日志，不会影响 Aegis 评分，也不会触发 Aegis 告警。非常适合上报关键路径信息，当问题发生时，可以配合快速定位复现路径。
+上报info 等级的日志，不会影响 Badjs 评分，也不会触发 Badjs 告警。非常适合上报关键路径信息，当问题发生时，可以配合快速定位复现路径。
 
-###### error级别上报
+###### 日志实时上报
 
 ```javascript
-this.$aegis.logE('aegis异常日志上报', report)
+this.$bjReport.logD('Badjs异常日志上报', report)
 ```
 
-上报error等级的日志，往往意味着页面出现了错误，当上报的 error 日志达到阈值时，Aegis 将会进行告警，帮助开发者尽早发现问题。另外，Aegis 每天都会给所有项目打分，上报的 error 日志数量是一个关键指标。
-
-###### 上报测速日志
+###### 上报错误日志
 
 ```javascript
-this.$aegis.report('www.test.com', report)
+this.$bjReport.report('www.test.com', report)
 ```
 
-上报测速日志,其中www.test.com替换成项目中需要上报的链接
 
-更多信息，可阅读aegis官网：[http://aegis.oa.com](http://aegis.oa.com "http://aegis.oa.com")
+上报error等级的日志，往往意味着页面出现了错误，当上报的 error 日志达到阈值时，Badjs 将会进行告警，帮助开发者尽早发现问题。另外，Badjs 每天都会给所有项目打分，上报的 error 日志数量是一个关键指标。
+
+
+###### 离线日志上报
+
+```javascript
+this.$bjReport.offline('Badjs异常日志上报', report)
+```
+
+记录离线日志
+
+
+更多信息，可阅读Badjs官网：[https://github.com/BetterJS/doc](https://github.com/BetterJS/doc "https://github.com/BetterJS/doc")
 <br>
 
 #### 5.5 前后端分离 —— mock支持
