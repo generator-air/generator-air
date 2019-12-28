@@ -908,7 +908,7 @@ this.$bjReport.logI('Badjs普通日志上报', report)
 ###### 日志实时上报
 
 ```javascript
-this.$bjReport.logD('Badjs异常日志上报', report)
+this.$bjReport.logD('Badjs实时日志上报', report)
 ```
 
 可以结合实时上报，跟踪问题; 不存入存储
@@ -916,7 +916,7 @@ this.$bjReport.logD('Badjs异常日志上报', report)
 ###### 上报错误日志
 
 ```javascript
-this.$bjReport.report('www.test.com', report)
+this.$bjReport.report('Badjs异常日志上报', report)
 ```
 
 上报error等级的日志，往往意味着页面出现了错误，当上报的 error 日志达到阈值时，Badjs 将会进行告警，帮助开发者尽早发现问题。另外，Badjs 每天都会给所有项目打分，上报的 error 日志数量是一个关键指标。
@@ -925,7 +925,7 @@ this.$bjReport.report('www.test.com', report)
 ###### 离线日志上报
 
 ```javascript
-this.$bjReport.offline('Badjs异常日志上报', report)
+this.$bjReport.offline('Badjs离线日志上报', report)
 ```
 记录离线日志
 
