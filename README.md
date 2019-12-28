@@ -442,7 +442,8 @@ export default {
 下载数据库文件：https://github.com/BetterJS/badjs-web/tree/master/db，导入到你服务器上
 进入mysql命令行
 执行
-```javascript
+
+```bash
 source /create.sql
 ```
  另外要安装mongodb
@@ -450,8 +451,7 @@ source /create.sql
 参考：https://www.runoob.com/mongodb/mongodb-linux-install.html
 
 下载运行docker镜像
-```javascript
-
+```bash
 // 下载images
 docker pull caihuijigood/badjs-docker
 
@@ -508,7 +508,7 @@ config.logReport = true // 日志全局开关
 
 访问http://{your server ip}:8081/
 
-![image](assets/aegis.png)
+![image](assets/log.png)
 
 #### 4.10 启动开发
 
@@ -871,7 +871,7 @@ Aegis是腾讯开源的一站式前端监控解决方案，涵盖了日志上报
 - 当前版本的aegis的数据采用离线计算的方式。为了提高数据的实效性，将离线计算的事件粒度缩减到分钟级别，能够提供短时的数据，
 帮助开发者快速响应问题。另外，也提供按天的统计数据，帮助开发者把控大盘，掌握全局视角。
 
-  ![image](assets/aegis.png)
+  ![image](assets/log.png)
 
 - 目前 aegis 平均每天为用户处理约8千万次pv事件和8千万条日志以及1亿多条测速数据。单机 TPS 为 5K 左右，服务器支持弹性扩容，
 即使业务扩张也可以维持良好的鲁棒性。
