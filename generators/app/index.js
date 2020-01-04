@@ -60,12 +60,13 @@ module.exports = class extends Generator {
 	// 统一的脚手架模板复制入口
 	_fileCopy() {
 		this._normalFileCopy();
-		this._specialFileCopy();
+		this._configFileCopy();
+		this._loginFileCopy();
 		this._packageJsonCopy();
 	}
 
 	// configs 下文件夹复制
-	_configFolderCopy(folderName) {
+	_configsFolderCopy(folderName) {
 		const files = fs.readdirSync(this.templatePath(`${this.seedName}/configs/${folderName}`));
 		files.forEach(file => {
 			this.fs.copyTpl(
@@ -73,6 +74,32 @@ module.exports = class extends Generator {
 				this.destinationPath(`${this.answers.projectName}/${file}`)
 			);
 		});
+	}
+
+	// files 下文件夹复制
+	_filesFolderCopy(folderName) {
+		const files = fs.readdirSync(this.templatePath(`${this.seedName}/files/${folderName}`));
+		files.forEach(file => {
+			const templatePath = `${this.seedName}/files/${folderName}/${file}`;
+			let destinationPath = `${this.answers.projectName}/src`;
+			// 分别处理几个特殊文件（复制到不同的目录下）
+			if (file === 'errorDict.js') {
+				destinationPath = `${destinationPath}/model/${file}`;
+			} else if (file === 'index.js') {
+				destinationPath = `${destinationPath}/router/${file}`;
+			} else if (file.indexOf('.vue') > 0) {
+				destinationPath = `${destinationPath}/pages/${file}`;
+			}
+			this._doCopy(templatePath, destinationPath);
+		});
+	}
+
+	// 执行模板复制
+	_doCopy(templatePath, destinationPath) {
+		this.fs.copyTpl(
+			this.templatePath(templatePath),
+			this.destinationPath(destinationPath)
+		);
 	}
 
 	// 脚手架模板，普通文件及文件夹复制
@@ -88,8 +115,8 @@ module.exports = class extends Generator {
 		);
 	}
 
-	// 脚手架模板，.开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
-	_specialFileCopy() {
+	// mock相关配置文件 + .开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
+	_configFileCopy() {
 		fs.exists(`${this.sourceRoot()}/${this.seedName}/configs`, exists => {
 			// 如果存在配置文件夹（考虑后续支持其他版本脚手架，可能会不存在configs文件夹）
 			if (exists) {
@@ -99,10 +126,12 @@ module.exports = class extends Generator {
 					const stats = fs.lstatSync(`${this.seedName}/configs/${file}`);
 					const isDirectory = stats.isDirectory();
 					if (isDirectory) {
-						if (this.answers.mockType === 'local' && file === 'mockConfig') {
-							this._configFolderCopy('mockConfig');
+						if (file === 'mockConfig') {
+							if (this.answers.mockType === 'local') {
+								this._configsFolderCopy('mockConfig');
+							}
 						} else {
-							this._configFolderCopy('commonConfig');
+							this._configsFolderCopy('commonConfig');
 						}
 					} else {
 						const formatFile = file.replace('_', '.');
@@ -114,6 +143,15 @@ module.exports = class extends Generator {
 				});
 			}
 		});
+	}
+
+	// 登录相关文件复制
+	_loginFileCopy() {
+		if (this.answers.loginType === 'self') {
+			this._filesFolderCopy('loginFiles');
+		} else {
+			this._filesFolderCopy('simpleFiles');
+		}
 	}
 
 	// package.json 生成
@@ -147,6 +185,12 @@ module.exports = class extends Generator {
 	_configsDelete() {
 		shell.rm('-rf', `${this.destinationRoot()}/${this.answers.projectName}/configs`);
 	}
+
+	// files 文件模板删除
+	_filesDelete() {
+		shell.rm('-rf', `${this.destinationRoot()}/${this.answers.projectName}/files`);
+	}
+
 
 	/* 生命周期函数 执行顺序，如下注释所示 */
 	// No1
@@ -235,6 +279,7 @@ module.exports = class extends Generator {
 	end() {
 		this.log('end:', 8);
 		this._configsDelete();
+		this._filesDelete();
 		this.log("\n" + "Congratulations! Project created successfully ~".green + "\n");
 	}
 };

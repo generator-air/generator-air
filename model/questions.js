@@ -112,11 +112,12 @@ const questions = [
 		name: 'mockType',
 		message: '请选择您期望使用的mock方式',
 		choices: [{
+			name: '本地mock（默认）',
+			value: 'local'
+		},
+		{
 			name: '在线mock',
 			value: 'online'
-		}, {
-			name: '本地mock',
-			value: 'local'
 		}]
 	}
 ];

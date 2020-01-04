@@ -1,6 +1,6 @@
 const dictionary = {
-	pc_vue_third: 'http://git.code.oa.com/fajg-fe/vue-admin-simple.git',
-	pc_vue_self: 'http://git.code.oa.com/fajg-fe/vue-admin-login.git',
+	pc_vue: 'http://git.code.oa.com/fajg-fe/vue-admin-simple.git',
+	// pc_vue_self: 'http://git.code.oa.com/fajg-fe/vue-admin-login.git',
 	pc_react: '',
 	h5_vue: '',
 	h5_react: '',
@@ -15,10 +15,7 @@ const dictionary = {
 };
 
 function mapToGit(answers) {
-	const { type, framework, loginType } = answers;
-	if (loginType) {
-		return dictionary[`${type}_${framework}_${loginType}`];
-	}
+	const { type, framework } = answers;
 	return dictionary[`${type}_${framework}`];
 }
 
