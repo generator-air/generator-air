@@ -1,6 +1,6 @@
 {
   "name": "@tencent/generator-air",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "",
   "scripts": {
     "lint": "eslint generators/** model/**",

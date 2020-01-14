@@ -1,6 +1,5 @@
 const dictionary = {
-	pc_vue: 'http://git.code.oa.com/fajg-fe/vue-admin-simple.git',
-	// pc_vue_self: 'http://git.code.oa.com/fajg-fe/vue-admin-login.git',
+	pc_vue: 'http://git.code.oa.com/fajg-fe/vue-admin.git',
 	pc_react: '',
 	h5_vue: '',
 	h5_react: '',
