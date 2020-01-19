@@ -1,5 +1,5 @@
 {
-  "name": "@tencent/generator-air",
+  "name": "generator-air",
   "version": "0.4.0",
   "description": "",
   "scripts": {
