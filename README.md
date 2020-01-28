@@ -122,7 +122,7 @@ yarn page
 
 执行生成后，效果如下：
 
-![image](assets/page_create_1.png)
+![image](assets/page_create_2.png)
 
 <br>
 **【注意点】**
