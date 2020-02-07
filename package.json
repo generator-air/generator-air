@@ -10,6 +10,9 @@
     "generators",
     "model"
   ],
+  "author": "Sherry",
+  "license": "MIT",
+  "repository": "https://git.code.tencent.com/FAJG-FE/generator-air.git",
   "keywords": [
     "yeoman-generator"
   ],
