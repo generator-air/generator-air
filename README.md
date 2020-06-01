@@ -63,26 +63,24 @@ npm run dev
 
 # 三、各款脚手架介绍
 
-<a href="https://github.com/generator-air/vue-admin">管理端-vue（已支持）</a>
+<a href="javascript:location.href=document.URL.replace('generator-air', 'vue-admin')">
+管理端-vue（已支持）
+</a>
 
-## · 管理端-react（开发中）
+管理端-react（开发中）
 
-## · 小程序-原生（开发中）
+小程序-原生（开发中）
 
-## · 小程序-taro（开发中）
+小程序-taro（开发中）
 
-## · 小程序-wepy（开发中）
+移动端-vue（开发中）
 
-## · 移动端-vue（开发中）
+移动端-react（开发中）
 
-## · 移动端-react（开发中）
+NodeJS-koa（开发中）
 
-## · NodeJS-koa（开发中）
+组件工具-原生 js（开发中）
 
-## · NodeJS-express（开发中）
+组件工具-vue 组件（开发中）
 
-## · 组件工具-原生 js（开发中）
-
-## · 组件工具-vue 组件（开发中）
-
-## · 组件工具-react 组件（开发中）
+组件工具-react 组件（开发中）
