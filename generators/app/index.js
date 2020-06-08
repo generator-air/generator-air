@@ -95,10 +95,10 @@ module.exports = class extends Generator {
       this._repositoryClone(answers);
       const generatorArgs = [
         {
+          seedName: this.seedName,
           answers,
           sourceRoot: this.sourceRoot(),
           destinationRoot: this.destinationRoot(),
-          seedName: this.seedName,
         },
       ];
       this.composeWith(require.resolve(`../generator/${this.seedName}.js`), {

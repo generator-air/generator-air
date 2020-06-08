@@ -63,9 +63,11 @@ npm run dev
 
 # 三、各款脚手架介绍
 
-<a href="javascript:location.href=document.URL.replace('generator-air', 'vue-admin')">
+<!-- <a href="javascript:location.href=document.URL.replace('generator-air', 'vue-admin')">
 管理端-vue（已支持）
-</a>
+</a> -->
+
+<a href="https://github.com/generator-air/vue-admin">管理端-vue（已支持）</a>
 
 管理端-react（开发中）
 
