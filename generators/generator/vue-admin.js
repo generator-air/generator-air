@@ -30,10 +30,6 @@ module.exports = class extends Generator {
 
   // 脚手架模板，普通文件及文件夹复制
   _normalFileCopy() {
-    this.log(
-      'this.templatePath(this.seedName):',
-      this.templatePath(this.seedName)
-    );
     // 复制模板文件夹下的内容，到目标文件夹（注：这里无法复制.开头的文件。如.eslintrc）
     this.fs.copyTpl(
       // 以 `${this.sourceRoot}/${this.seedName}` 文件夹为模板

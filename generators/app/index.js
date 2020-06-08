@@ -19,6 +19,20 @@ module.exports = class extends Generator {
   }
 
   /* 私有函数 */
+  // 集成指定脚手架的 generator
+  _generatorCompose(answers) {
+    const generatorArgs = [
+      {
+        seedName: this.seedName,
+        answers,
+        sourceRoot: this.sourceRoot(),
+        destinationRoot: this.destinationRoot(),
+      },
+    ];
+    this.composeWith(require.resolve(`../generator/${this.seedName}.js`), {
+      arguments: generatorArgs,
+    });
+  }
   // 获取脚手架模板的git仓库地址，并克隆
   _repositoryClone(answers) {
     // 检查git命令是否存在
@@ -47,11 +61,13 @@ module.exports = class extends Generator {
           if (answer.isUpdate) {
             // 删除原有文件夹，重新clone最新版的代码
             shell.rm('-rf', this.seedName);
+            // shell.exec(`rm -rf ${this.seedName}`);
             shell.exec(`git clone ${repository}`);
           }
         } else {
           shell.exec(`git clone ${repository}`);
         }
+        this._generatorCompose(answers);
         done();
       });
     } else {
@@ -93,17 +109,6 @@ module.exports = class extends Generator {
     if (answers) {
       // 根据用户选择，获取对应的 git 仓库，并进行 clone
       this._repositoryClone(answers);
-      const generatorArgs = [
-        {
-          seedName: this.seedName,
-          answers,
-          sourceRoot: this.sourceRoot(),
-          destinationRoot: this.destinationRoot(),
-        },
-      ];
-      this.composeWith(require.resolve(`../generator/${this.seedName}.js`), {
-        arguments: generatorArgs,
-      });
     }
   }
 
