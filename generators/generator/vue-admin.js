@@ -77,7 +77,6 @@ module.exports = class extends Generator {
         mockServerName: localMock ? `\n  '${MOCK_SERVER_NAME}',` : '',
         mockServerTask: localMock ? mockServerTask : ''
       };
-      console.log('mockConfig:', mockConfig);
       const file = generateFile(mockConfig);
       const filePath = this.templatePath(`${this.seedName}/${fileName}`);
       fs.writeFileSync(filePath, file);
@@ -96,7 +95,6 @@ module.exports = class extends Generator {
         loginPageImport: selfLogin ? loginPageImport : '',
         loginHandler: selfLogin ? selfLoginHandler : thirdLoginHandler
       };
-      console.log('fileConfig:', fileConfig);
       const file = generateFile(fileConfig);
       let filePath = '';
       switch (fileName) {
