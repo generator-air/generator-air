@@ -52,6 +52,7 @@ module.exports = class extends Generator {
     }/templates`;
     const {
       mockServerTask,
+      notifyImport,
       loginPageImport,
       loginPageRoute,
       thirdLoginRedirectHandler,
@@ -89,6 +90,7 @@ module.exports = class extends Generator {
       const selfLogin = this.answers.loginType === 'self';
       // const useAuth = this.answers.useAuth;
       const fileConfig = {
+        notifyImport: selfLogin ? '' : notifyImport,
         loginPageImport: selfLogin ? loginPageImport : '',
         loginPageRoute: selfLogin ? loginPageRoute : '',
         redirectHandler: selfLogin ? selfLoginRedirectHandler : thirdLoginRedirectHandler,
