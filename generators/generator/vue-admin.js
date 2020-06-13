@@ -52,12 +52,10 @@ module.exports = class extends Generator {
     }/templates`;
     const {
       mockServerTask,
-      notifyImport,
-      thirdToLoginHandler,
-      localToLoginHandler,
       loginPageImport,
-      thirdLoginHandler,
-      selfLoginHandler
+      loginPageRoute,
+      thirdLoginRedirectHandler,
+      selfLoginRedirectHandler
     } = require(`${templatePath}/const/code.js`);
     const {
       LOCAL_MOCK_HOST,
@@ -82,25 +80,22 @@ module.exports = class extends Generator {
       fs.writeFileSync(filePath, file);
     });
 
-    /* errorDict、router/index.js、login.vue 生成 */
+    /* router/index.js 生成 */
     const fileTemplates = fs.readdirSync(
       this.templatePath(`${this.seedName}/templates/fileTemplates`)
     );
     fileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/fileTemplates/${fileName}`);
       const selfLogin = this.answers.loginType === 'self';
+      // const useAuth = this.answers.useAuth;
       const fileConfig = {
-        notifyImport: selfLogin ? '' : notifyImport,
-        toLoginHandler: selfLogin ? localToLoginHandler : thirdToLoginHandler,
         loginPageImport: selfLogin ? loginPageImport : '',
-        loginHandler: selfLogin ? selfLoginHandler : thirdLoginHandler
+        loginPageRoute: selfLogin ? loginPageRoute : '',
+        redirectHandler: selfLogin ? selfLoginRedirectHandler : thirdLoginRedirectHandler,
       };
       const file = generateFile(fileConfig);
       let filePath = '';
       switch (fileName) {
-        case 'errorDict.js':
-          filePath = this.templatePath(`${this.seedName}/src/model/errorDict.js`);
-          break;
         case 'routerIndex.js':
           filePath = this.templatePath(`${this.seedName}/src/router/index.js`);
           break;
@@ -152,13 +147,16 @@ module.exports = class extends Generator {
 
   _foldersDelete() {
     const projectPath = `${this.destinationRoot()}/${this.answers.projectName}`;
-    const { mockType, loginType } = this.answers;
+    const { mockType, loginType, useAuth } = this.answers;
     shell.rm('-rf', `${projectPath}/templates`);
     if (mockType !== 'local') {
       shell.rm('-rf',`${projectPath}/mock`);
     }
     if (loginType !== 'self') {
        shell.rm('-rf',`${projectPath}/src/pages/login.vue`);
+    }
+    if (!useAuth) {
+      shell.rm('-rf', `${projectPath}/src/model/authDiict.js ${projectPath}/src/pages/demo3`);
     }
   }
 

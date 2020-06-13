@@ -45,9 +45,6 @@ const questions = [
 		}, {
 			name: 'taro',
 			value: 'taro'
-		}, {
-			name: 'wepy',
-			value: 'wepy'
 		}],
 		when(answers) {
 			return answers.type === 'miniprogram';
@@ -97,6 +94,15 @@ const questions = [
 			name: '本系统登录',
 			value: 'self'
 		}],
+		when(answers) {
+			return answers.type === 'pc' || answers.type === 'h5';
+		}
+	},
+  {
+		type: 'confirm',
+		name: 'useAuth',
+		message: '请选择是否使用权限管理',
+    default: true,
 		when(answers) {
 			return answers.type === 'pc' || answers.type === 'h5';
 		}
