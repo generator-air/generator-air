@@ -50,14 +50,20 @@ module.exports = class extends Generator {
     const templatePath = `${this.sourceRoot()}/${
       this.seedName
     }/templates`;
+
     const {
       mockServerTask,
+      authImport,
       notifyImport,
       loginPageImport,
       loginPageRoute,
       thirdLoginRedirectHandler,
-      selfLoginRedirectHandler
+      selfLoginRedirectHandler,
+      routeHandler,
+      menuHandler,
+      authMenuHandler,
     } = require(`${templatePath}/const/code.js`);
+
     const {
       LOCAL_MOCK_HOST,
       ONLINE_MOCK_HOST,
@@ -88,12 +94,15 @@ module.exports = class extends Generator {
     fileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/fileTemplates/${fileName}`);
       const selfLogin = this.answers.loginType === 'self';
-      // const useAuth = this.answers.useAuth;
+      const useAuth = this.answers.useAuth;
       const fileConfig = {
         notifyImport: selfLogin ? '' : notifyImport,
         loginPageImport: selfLogin ? loginPageImport : '',
         loginPageRoute: selfLogin ? loginPageRoute : '',
         redirectHandler: selfLogin ? selfLoginRedirectHandler : thirdLoginRedirectHandler,
+        authImport: useAuth ? authImport : '',
+        routeHandler: useAuth ? routeHandler : '',
+        menuHandler: useAuth ? authMenuHandler : menuHandler
       };
       const file = generateFile(fileConfig);
       let filePath = '';
@@ -158,7 +167,9 @@ module.exports = class extends Generator {
        shell.rm('-rf',`${projectPath}/src/pages/login.vue`);
     }
     if (!useAuth) {
-      shell.rm('-rf', `${projectPath}/src/model/authDiict.js ${projectPath}/src/pages/demo3`);
+      shell.rm('-rf', `${projectPath}/src/model/authDict.js`);
+      shell.rm('-rf', `${projectPath}/src/router/demo3.js`);
+      shell.rm('-Rf', `${projectPath}/src/pages/demo3`);
     }
   }
 
@@ -214,7 +225,7 @@ module.exports = class extends Generator {
     this.log("generator end:", 8);
     this._foldersDelete();
     this.log(
-      "\n" + "Congratulations! Project created successfully ~".green + "\n"
+      "\n" + "Congratulations! Project created successfully ~ ".green + "\n"
     );
   }
 };
