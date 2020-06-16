@@ -1,8 +1,8 @@
-const Generator = require("yeoman-generator");
-const shell = require("shelljs");
-const fs = require("fs");
+const Generator = require('yeoman-generator');
+const shell = require('shelljs');
+const fs = require('fs');
 //可以在terminal打印自定义样式的字
-require("colors");
+require('colors');
 
 // 所有操作，均在用户执行 yo air 的目录下
 module.exports = class extends Generator {
@@ -62,6 +62,8 @@ module.exports = class extends Generator {
       routeHandler,
       menuHandler,
       authMenuHandler,
+      operationMenu,
+      logMenu
     } = require(`${templatePath}/const/code.js`);
 
     const {
@@ -87,14 +89,14 @@ module.exports = class extends Generator {
       fs.writeFileSync(filePath, file);
     });
 
-    /* router/index.js 生成 */
+    /* router/index.js + menu.js 生成 */
     const fileTemplates = fs.readdirSync(
       this.templatePath(`${this.seedName}/templates/fileTemplates`)
     );
     fileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/fileTemplates/${fileName}`);
-      const selfLogin = this.answers.loginType === 'self';
-      const useAuth = this.answers.useAuth;
+      const { loginType, useAuth, useLog } = this.answers;
+      const selfLogin = loginType === 'self';
       const fileConfig = {
         notifyImport: selfLogin ? '' : notifyImport,
         loginPageImport: selfLogin ? loginPageImport : '',
@@ -102,13 +104,18 @@ module.exports = class extends Generator {
         redirectHandler: selfLogin ? selfLoginRedirectHandler : thirdLoginRedirectHandler,
         authImport: useAuth ? authImport : '',
         routeHandler: useAuth ? routeHandler : '',
-        menuHandler: useAuth ? authMenuHandler : menuHandler
+        menuHandler: useAuth ? authMenuHandler : menuHandler,
+        operationMenu: useAuth ? operationMenu : '',
+        logMenu: useLog ? logMenu : ''
       };
       const file = generateFile(fileConfig);
       let filePath = '';
       switch (fileName) {
         case 'routerIndex.js':
           filePath = this.templatePath(`${this.seedName}/src/router/index.js`);
+          break;
+        case 'menu.js':
+          filePath = this.templatePath(`${this.seedName}/src/model/menu.js`);
           break;
         default:
           break;
@@ -124,7 +131,7 @@ module.exports = class extends Generator {
     );
     // 将configs下以_开头的配置文件逐个格式化成以.开头
     files.forEach((file) => {
-      const formatFile = file.replace("_", ".");
+      const formatFile = file.replace('_', '.');
       this.fs.copyTpl(
         this.templatePath(`${this.seedName}/templates/configFiles/${file}`),
         this.destinationPath(`${this.answers.projectName}/${formatFile}`)
@@ -134,20 +141,31 @@ module.exports = class extends Generator {
 
   // package.json 生成
   _packageJsonCopy() {
+    const { projectName, mockType, useAuth, useLog } = this.answers;
     // 动态写入 package.json
-    const name = this.answers.projectName;
+    const dependencies = {};
     const devDependencies = {};
-    if (this.answers.mockType === "local") {
-      devDependencies["json-server"] = "^0.15.1";
+    // 本地 mock 添加 json-server
+    if (mockType === 'local') {
+      devDependencies['json-server'] = '^0.15.1';
+    }
+    // 使用权限管理，添加 authority-filter
+    if (useAuth) {
+      dependencies['authority-filter'] = '^0.0.1';
+    }
+    // 使用日志，添加 badjs-report
+    if (useLog) {
+      dependencies['badjs-report'] = '^1.3.3';
     }
     const pkgJson = {
-      name,
+      name: projectName,
+      dependencies,
       devDependencies,
-      "lint-staged": {
-        "*.js": ["vue-cli-service lint", "git add"],
-        "*.vue": ["vue-cli-service lint", "git add"],
+      'lint-staged': {
+        '*.js': ['vue-cli-service lint', 'git add'],
+        '*.vue': ['vue-cli-service lint', 'git add'],
       },
-      "pre-commit": "lint",
+      'pre-commit': 'lint',
     };
     // this.destinationPath 指定要写入 pkgJson 的目标 package.json
     this.fs.extendJSON(
@@ -158,7 +176,7 @@ module.exports = class extends Generator {
 
   _foldersDelete() {
     const projectPath = `${this.destinationRoot()}/${this.answers.projectName}`;
-    const { mockType, loginType, useAuth } = this.answers;
+    const { mockType, loginType, useAuth, useLog } = this.answers;
     shell.rm('-rf', `${projectPath}/templates`);
     if (mockType !== 'local') {
       shell.rm('-rf',`${projectPath}/mock`);
@@ -168,15 +186,20 @@ module.exports = class extends Generator {
     }
     if (!useAuth) {
       shell.rm('-rf', `${projectPath}/src/model/authDict.js`);
-      shell.rm('-rf', `${projectPath}/src/router/demo3.js`);
-      shell.rm('-Rf', `${projectPath}/src/pages/demo3`);
+      shell.rm('-rf', `${projectPath}/src/router/operation.js`);
+      shell.rm('-Rf', `${projectPath}/src/pages/operation`);
+    }
+    if (!useLog) {
+      shell.rm('-rf', `${projectPath}/src/mixin/badjs.js`);
+      shell.rm('-rf', `${projectPath}/src/router/log.js`);
+      shell.rm('-Rf', `${projectPath}/src/pages/log`);
     }
   }
 
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No5
   writing() {
-    this.log("generator writing:", 5);
+    this.log('generator writing:', 5);
     const done = this.async();
     fs.exists(
       `${this.destinationRoot()}/${this.answers.projectName}`,
@@ -184,18 +207,18 @@ module.exports = class extends Generator {
         // 如果用户当前目录下，已存在同名项目
         if (exists) {
           const answer = await this.prompt({
-            type: "confirm",
-            name: "isReCreate",
-            message: "即将创建的项目已存在，是否要覆盖已有项目？",
+            type: 'confirm',
+            name: 'isReCreate',
+            message: '即将创建的项目已存在，是否要覆盖已有项目？',
           });
           if (answer.isReCreate) {
             shell.rm(
-              "-rf",
+              '-rf',
               `${this.destinationRoot()}/${this.answers.projectName}`
             );
             this._fileCopy();
           } else {
-            this.log("\n" + "结束创建。" + "\n");
+            this.log('\n' + '结束创建。' + '\n');
             shell.exit(1);
           }
         } else {
@@ -208,24 +231,24 @@ module.exports = class extends Generator {
 
   // No7
   install() {
-    this.log("generator install:", 7);
+    this.log('generator install:', 7);
     // 进入刚刚创建的脚手架目录
     shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
     // 检查是否安装了yarn
-    if (shell.which("yarn")) {
+    if (shell.which('yarn')) {
       // 执行npm包安装
       this.yarnInstall();
-    } else if (shell.which("npm")) {
+    } else if (shell.which('npm')) {
       this.npmInstall();
     }
   }
 
   // No8
   end() {
-    this.log("generator end:", 8);
+    this.log('generator end:', 8);
     this._foldersDelete();
     this.log(
-      "\n" + "Congratulations! Project created successfully ~ ".green + "\n"
+      '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'
     );
   }
 };
