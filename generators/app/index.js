@@ -57,7 +57,7 @@ module.exports = class extends Generator {
             type: "confirm",
             name: "isUpdate",
             message: "本地已存在脚手架模板，是否更新模板？",
-            default: false,
+            default: true,
           });
           if (answer.isUpdate) {
             // 删除原有文件夹，重新clone最新版的代码
