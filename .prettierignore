@@ -1,0 +1,9 @@
+node_modules
+
+.eslintignore
+.prettierignore
+
+projects
+
+yarn.lock
+package-lock.json

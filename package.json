@@ -1,10 +1,14 @@
 {
   "name": "generator-air",
   "version": "1.0.0",
-  "description": "",
+  "description": "轻量级前端脚手架生成器 —— generator-air",
   "scripts": {
-    "lint": "eslint generators/** model/**",
-    "lint-fix": "eslint --fix generators/** model/**"
+    "release_major": "npm version major",
+    "release_minor": "npm version minor",
+    "release_patch": "npm version patch",
+    "postversion": "npm publish",
+    "lint": "eslint .",
+    "prettier": "prettier --write ."
   },
   "files": [
     "generators",
@@ -23,8 +27,11 @@
   "devDependencies": {
     "babel-eslint": "^10.0.3",
     "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "husky": "^3.0.9",
-    "lint-staged": "^9.4.2"
+    "lint-staged": "^9.4.2",
+    "prettier": "^2.0.5"
   },
   "husky": {
     "hooks": {
@@ -32,9 +39,10 @@
     }
   },
   "lint-staged": {
-    "*.js": [
-      "eslint",
-      "git add"
+    "*": [
+      "npm run prettier",
+      "npm run lint",
+      "git add ."
     ]
   }
 }

@@ -47,9 +47,7 @@ module.exports = class extends Generator {
 
   // 根据模板项目包含的模板文件，生成使用者期望的代码
   _generateFiles() {
-    const templatePath = `${this.sourceRoot()}/${
-      this.seedName
-    }/templates`;
+    const templatePath = `${this.sourceRoot()}/${this.seedName}/templates`;
 
     const {
       mockServerTask,
@@ -63,13 +61,13 @@ module.exports = class extends Generator {
       menuHandler,
       authMenuHandler,
       operationMenu,
-      logMenu
+      logMenu,
     } = require(`${templatePath}/const/code.js`);
 
     const {
       LOCAL_MOCK_HOST,
       ONLINE_MOCK_HOST,
-      MOCK_SERVER_NAME
+      MOCK_SERVER_NAME,
     } = require(`${templatePath}/const/constants.js`);
 
     /* config.js + gulpfile.js 生成 */
@@ -82,7 +80,7 @@ module.exports = class extends Generator {
       const mockConfig = {
         mockHost: localMock ? LOCAL_MOCK_HOST : ONLINE_MOCK_HOST,
         mockServerName: localMock ? `\n  '${MOCK_SERVER_NAME}',` : '',
-        mockServerTask: localMock ? mockServerTask : ''
+        mockServerTask: localMock ? mockServerTask : '',
       };
       const file = generateFile(mockConfig);
       const filePath = this.templatePath(`${this.seedName}/${fileName}`);
@@ -101,12 +99,14 @@ module.exports = class extends Generator {
         notifyImport: selfLogin ? '' : notifyImport,
         loginPageImport: selfLogin ? loginPageImport : '',
         loginPageRoute: selfLogin ? loginPageRoute : '',
-        redirectHandler: selfLogin ? selfLoginRedirectHandler : thirdLoginRedirectHandler,
+        redirectHandler: selfLogin
+          ? selfLoginRedirectHandler
+          : thirdLoginRedirectHandler,
         authImport: useAuth ? authImport : '',
         routeHandler: useAuth ? routeHandler : '',
         menuHandler: useAuth ? authMenuHandler : menuHandler,
         operationMenu: useAuth ? operationMenu : '',
-        logMenu: useLog ? logMenu : ''
+        logMenu: useLog ? logMenu : '',
       };
       const file = generateFile(fileConfig);
       let filePath = '';
@@ -179,10 +179,10 @@ module.exports = class extends Generator {
     const { mockType, loginType, useAuth, useLog } = this.answers;
     shell.rm('-rf', `${projectPath}/templates`);
     if (mockType !== 'local') {
-      shell.rm('-rf',`${projectPath}/mock`);
+      shell.rm('-rf', `${projectPath}/mock`);
     }
     if (loginType !== 'self') {
-       shell.rm('-rf',`${projectPath}/src/pages/login.vue`);
+      shell.rm('-rf', `${projectPath}/src/pages/login.vue`);
     }
     if (!useAuth) {
       shell.rm('-rf', `${projectPath}/src/model/authDict.js`);
