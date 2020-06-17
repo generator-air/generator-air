@@ -51,13 +51,13 @@ npm run dev
 
 出现下图，则启动成功：
 
-![image](assets/npm_run_dev.png)
+![image](https://7368-shryzhang-test-13eb29-1258821855.tcb.qcloud.la/generator-air/npm_run_dev.png?sign=4462018a84a6989d4705851fbfe83261&t=1592310622)
 
 <br>
 
 启动成功后，浏览器访问 localhost:8090
 
-![image](assets/home.png)
+![image](https://7368-shryzhang-test-13eb29-1258821855.tcb.qcloud.la/generator-air/home.png?sign=91a31d65ac90e9c5a45daf8bf4831a86&t=1592310637)
 
 <br>
 

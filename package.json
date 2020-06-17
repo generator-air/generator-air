@@ -1,6 +1,6 @@
 {
   "name": "generator-air",
-  "version": "0.4.4",
+  "version": "1.0.0",
   "description": "",
   "scripts": {
     "lint": "eslint generators/** model/**",
