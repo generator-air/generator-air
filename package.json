@@ -1,7 +1,7 @@
 {
   "name": "generator-air",
   "version": "1.0.0",
-  "description": "轻量级前端脚手架生成器 —— generator-air",
+  "description": "轻量的前端脚手架 —— generator-air",
   "scripts": {
     "release_major": "npm version major",
     "release_minor": "npm version minor",
