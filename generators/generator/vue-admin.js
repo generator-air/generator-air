@@ -83,7 +83,7 @@ module.exports = class extends Generator {
         mockServerTask: localMock ? mockServerTask : '',
       };
       const file = generateFile(mockConfig);
-      const filePath = this.templatePath(`${this.seedName}/${fileName}`);
+      const filePath = this.templatePath(`${this.seedName}/config/${fileName}`);
       fs.writeFileSync(filePath, file);
     });
 
@@ -161,11 +161,14 @@ module.exports = class extends Generator {
       name: projectName,
       dependencies,
       devDependencies,
-      'lint-staged': {
-        '*.js': ['vue-cli-service lint', 'git add'],
-        '*.vue': ['vue-cli-service lint', 'git add'],
+      husky: {
+        hooks: {
+          'pre-commit': 'lint-staged',
+        },
       },
-      'pre-commit': 'lint',
+      'lint-staged': {
+        '*': ['npm run prettier', 'npm run lint', 'git add .'],
+      },
     };
     // this.destinationPath 指定要写入 pkgJson 的目标 package.json
     this.fs.extendJSON(
