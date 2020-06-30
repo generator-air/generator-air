@@ -253,5 +253,18 @@ module.exports = class extends Generator {
     this.log(
       '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'
     );
+    // 如果开发者没有安装feflow
+    if (!shell.which('fef')) {
+      this.log(
+        '【warning】generator-air基于feflow构建，请务必在项目根目录下执行以下语句:\n'
+          .red +
+          ' npm install @feflow/cli -g \n fef install @generator-air/feflow-plugin-air \n 项目目录下: npm i\n'
+            .yellow +
+          '安装feflow及相应插件、套件。'.red +
+          '否则项目无法启动'.red
+      );
+    } else {
+      shell.exec('fef install @generator-air/feflow-plugin-air');
+    }
   }
 };
