@@ -250,9 +250,6 @@ module.exports = class extends Generator {
   end() {
     this.log('generator end:', 8);
     this._foldersDelete();
-    this.log(
-      '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'
-    );
     // 如果开发者没有安装feflow
     if (!shell.which('fef')) {
       this.log(
@@ -263,8 +260,11 @@ module.exports = class extends Generator {
           '安装feflow及相应插件、套件。'.red +
           '否则项目无法启动'.red
       );
-    } else {
-      shell.exec('fef install @generator-air/feflow-plugin-air');
+      return;
     }
+    shell.exec('fef install @generator-air/feflow-plugin-air');
+    this.log(
+      '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'
+    );
   }
 };
