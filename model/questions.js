@@ -126,7 +126,7 @@ const questions = [
     message: '请选择是否使用权限管理',
     default: true,
     when(answers) {
-      return answers.type === 'pc' || answers.type === 'h5';
+      return answers.type === 'pc';
     },
   },
   {
@@ -135,7 +135,7 @@ const questions = [
     message: '请选择是否使用日志监控',
     default: true,
     when(answers) {
-      return answers.type === 'pc' || answers.type === 'h5';
+      return answers.type !== 'component';
     },
   },
   {
@@ -143,6 +143,18 @@ const questions = [
     name: 'projectName',
     message: '请输入项目名称',
     default: 'my-project',
+    when(answers) {
+      return answers.type !== 'component';
+    },
+  },
+  {
+    type: 'input',
+    name: 'projectName',
+    message: '请输入组件名称',
+    default: 'my-component',
+    when(answers) {
+      return answers.type === 'component';
+    },
   },
   {
     type: 'list',
@@ -150,14 +162,17 @@ const questions = [
     message: '请选择您期望使用的mock方式',
     choices: [
       {
-        name: '本地mock（默认）',
-        value: 'local',
-      },
-      {
-        name: '在线mock',
+        name: '在线mock（默认）',
         value: 'online',
       },
+      {
+        name: '本地mock',
+        value: 'local',
+      },
     ],
+    when(answers) {
+      return answers.type !== 'node' && answers.type !== 'component';
+    },
   },
 ];
 

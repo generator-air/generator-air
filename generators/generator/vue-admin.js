@@ -124,7 +124,7 @@ module.exports = class extends Generator {
     });
   }
 
-  // mock相关配置文件 + .开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
+  // .开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
   _configFileCopy() {
     const files = fs.readdirSync(
       this.templatePath(`${this.seedName}/templates/configFiles`)

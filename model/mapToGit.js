@@ -8,7 +8,7 @@ const dictionary = {
   miniprogram_wepy: '',
   node_koa: '',
   node_express: '',
-  component_js: '',
+  component_js: 'https://git.code.tencent.com/FAJG-FE/component-js.git',
   component_vue: '',
   component_react: '',
 };
