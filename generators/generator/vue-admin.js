@@ -70,7 +70,7 @@ module.exports = class extends Generator {
       MOCK_SERVER_NAME,
     } = require(`${templatePath}/const/constants.js`);
 
-    /* config.js + gulpfile.js 生成 */
+    /* config.js 生成 */
     const configFileTemplates = fs.readdirSync(
       this.templatePath(`${this.seedName}/templates/configTemplates`)
     );
@@ -161,14 +161,6 @@ module.exports = class extends Generator {
       name: projectName,
       dependencies,
       devDependencies,
-      husky: {
-        hooks: {
-          'pre-commit': 'lint-staged',
-        },
-      },
-      'lint-staged': {
-        '*': ['npm run prettier', 'npm run lint', 'git add .'],
-      },
     };
     // this.destinationPath 指定要写入 pkgJson 的目标 package.json
     this.fs.extendJSON(
@@ -250,19 +242,6 @@ module.exports = class extends Generator {
   end() {
     this.log('generator end:', 8);
     this._foldersDelete();
-    // 如果开发者没有安装feflow
-    if (!shell.which('fef')) {
-      this.log(
-        '【warning】generator-air基于feflow构建，请务必在项目根目录下执行以下语句:\n'
-          .red +
-          ' npm install @feflow/cli -g \n fef install @generator-air/feflow-plugin-air \n 项目目录下: npm i\n'
-            .yellow +
-          '安装feflow及相应插件、套件。'.red +
-          '否则项目无法启动'.red
-      );
-      return;
-    }
-    shell.exec('fef install @generator-air/feflow-plugin-air');
     this.log(
       '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'
     );
