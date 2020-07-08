@@ -34,7 +34,7 @@ module.exports = class extends Generator {
     });
   }
   // 获取脚手架模板的git仓库地址，并克隆
-  _repositoryClone(answers) {
+  async _repositoryClone(answers) {
     // 检查git命令是否存在
     if (!shell.which('git')) {
       shell.echo('发生错误。请确保您已经安装了Git');
@@ -48,28 +48,25 @@ module.exports = class extends Generator {
       );
       // 进入 projects 目录
       shell.cd(path.resolve(__dirname, '../../projects'));
-      const done = this.async();
       // 查看当前项目，projects下是否已存在
-      fs.exists(this.seedName, async (exists) => {
-        // 如果已存在，让用户确认，是否重新clone
-        if (exists) {
-          const answer = await this.prompt({
-            type: 'confirm',
-            name: 'isUpdate',
-            message: '本地已存在脚手架模板，是否更新模板？',
-            default: true,
-          });
-          if (answer.isUpdate) {
-            // 删除原有文件夹，重新clone最新版的代码
-            shell.rm('-rf', this.seedName);
-            shell.exec(`git clone ${repository}`);
-          }
-        } else {
+      const isExists = fs.existsSync(this.seedName);
+      // 如果已存在，让用户确认，是否重新clone
+      if (isExists) {
+        const answer = await this.prompt({
+          type: 'confirm',
+          name: 'isUpdate',
+          message: '本地已存在脚手架模板，是否更新模板？',
+          default: true,
+        });
+        if (answer.isUpdate) {
+          // 删除原有文件夹，重新clone最新版的代码
+          shell.rm('-rf', this.seedName);
           shell.exec(`git clone ${repository}`);
         }
-        this._generatorCompose(answers);
-        done();
-      });
+      } else {
+        shell.exec(`git clone ${repository}`);
+      }
+      this._generatorCompose(answers);
     } else {
       this.log(
         '\n' +
@@ -83,7 +80,6 @@ module.exports = class extends Generator {
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No1
   initializing() {
-    this.log('initializing:', 1);
     // 如果开发者没有安装feflow
     if (!shell.which('fef')) {
       this.log(
@@ -106,13 +102,11 @@ module.exports = class extends Generator {
 
   // No2
   async prompting() {
-    this.log('prompting:', 2);
     this.answers = await this.prompt(questions);
   }
 
   // No3
   configuring() {
-    this.log('configuring:', 3);
     // 安装 generator-air 配套 feflow 插件
     // shell.exec('fef install @generator-air/feflow-plugin-air');
     const answers = this.answers;

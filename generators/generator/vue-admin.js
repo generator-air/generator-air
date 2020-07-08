@@ -191,41 +191,35 @@ module.exports = class extends Generator {
 
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No5
-  writing() {
-    this.log('generator writing:', 5);
-    const done = this.async();
-    fs.exists(
-      `${this.destinationRoot()}/${this.answers.projectName}`,
-      async (exists) => {
-        // 如果用户当前目录下，已存在同名项目
-        if (exists) {
-          const answer = await this.prompt({
-            type: 'confirm',
-            name: 'isReCreate',
-            message: '即将创建的项目已存在，是否要覆盖已有项目？',
-          });
-          if (answer.isReCreate) {
-            shell.rm(
-              '-rf',
-              `${this.destinationRoot()}/${this.answers.projectName}`
-            );
-            this._fileCopy();
-          } else {
-            this.log('\n' + '结束创建。' + '\n');
-            shell.exit(1);
-          }
-        } else {
-          this._fileCopy();
-        }
-        done();
-      }
+  async writing() {
+    const isExists = fs.existsSync(
+      `${this.destinationRoot()}/${this.answers.projectName}`
     );
+    // 如果用户当前目录下，已存在同名项目
+    if (isExists) {
+      const answer = await this.prompt({
+        type: 'confirm',
+        name: 'isReCreate',
+        message: '即将创建的项目名称已存在，是否要覆盖已有项目？',
+      });
+      if (answer.isReCreate) {
+        shell.rm(
+          '-rf',
+          `${this.destinationRoot()}/${this.answers.projectName}`
+        );
+        this._fileCopy();
+      } else {
+        this.log('\n' + '结束创建。' + '\n');
+        shell.exit(1);
+      }
+    } else {
+      this._fileCopy();
+    }
   }
 
   // No7
   install() {
-    this.log('generator install:', 7);
-    this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉');
+    this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉'.yellow);
     // 进入刚刚创建的脚手架目录
     shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
     // 检查是否安装了yarn
@@ -239,7 +233,6 @@ module.exports = class extends Generator {
 
   // No8
   end() {
-    this.log('generator end:', 8);
     this._foldersDelete();
     this.log(
       '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'
