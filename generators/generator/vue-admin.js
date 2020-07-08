@@ -52,7 +52,6 @@ module.exports = class extends Generator {
     const {
       mockServerTask,
       authImport,
-      notifyImport,
       loginPageImport,
       loginPageRoute,
       thirdLoginRedirectHandler,
@@ -96,7 +95,6 @@ module.exports = class extends Generator {
       const { loginType, useAuth, useLog } = this.answers;
       const selfLogin = loginType === 'self';
       const fileConfig = {
-        notifyImport: selfLogin ? '' : notifyImport,
         loginPageImport: selfLogin ? loginPageImport : '',
         loginPageRoute: selfLogin ? loginPageRoute : '',
         redirectHandler: selfLogin
@@ -227,6 +225,7 @@ module.exports = class extends Generator {
   // No7
   install() {
     this.log('generator install:', 7);
+    this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉');
     // 进入刚刚创建的脚手架目录
     shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
     // 检查是否安装了yarn
