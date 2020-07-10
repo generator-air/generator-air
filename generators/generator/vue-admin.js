@@ -10,7 +10,16 @@ module.exports = class extends Generator {
   constructor(args, opts) {
     // 必需的 super
     super(args, opts);
-    const { seedName, answers, sourceRoot, destinationRoot } = args[0];
+    const {
+      seedName,
+      answers,
+      sourceRoot,
+      destinationRoot,
+      airVersion,
+      repository,
+    } = args[0];
+    // 根据 air 版本号，clone 相应版本的模板
+    this._repositoryClone(airVersion, repository);
     this.seedName = seedName;
     this.answers = answers;
     // 指定脚手架模板目录
@@ -20,6 +29,26 @@ module.exports = class extends Generator {
   }
 
   /* 私有函数 */
+  // 根据 air 版本号，clone 相应版本的模板
+  _repositoryClone(airVersion, repository) {
+    let tag = '';
+    // vue-admin tag版本号 => generator-air 版本号
+    const map = {
+      'v1.0.0': /0\.\d\.\d/,
+      'v2.0.0': /1\.0\.\d/,
+    };
+    Object.keys(map).forEach((key) => {
+      if (airVersion.match(map[key])) {
+        tag = key;
+      }
+    });
+    this.log('tag:', tag);
+    if (tag) {
+      shell.exec(`git clone --branch ${tag} ${repository}`);
+    } else {
+      shell.exec(`git clone ${repository}`);
+    }
+  }
   // 统一的脚手架模板复制入口
   _fileCopy() {
     // 根据模板js文件，生成js代码
@@ -218,16 +247,26 @@ module.exports = class extends Generator {
   }
 
   // No7
-  install() {
-    this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉'.yellow);
-    // 进入刚刚创建的脚手架目录
-    shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
-    // 检查是否安装了yarn
-    if (shell.which('yarn')) {
-      // 执行npm包安装
-      this.yarnInstall();
-    } else if (shell.which('npm')) {
-      this.npmInstall();
+  async install() {
+    const answer = await this.prompt([
+      {
+        type: 'confirm',
+        name: 'isInstall',
+        message: '项目已生成，是否现在安装依赖包？',
+        default: false,
+      },
+    ]);
+    if (answer.isInstall) {
+      this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉'.yellow);
+      // 进入刚刚创建的脚手架目录
+      shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
+      // 检查是否安装了yarn
+      if (shell.which('yarn')) {
+        // 执行npm包安装
+        this.yarnInstall();
+      } else if (shell.which('npm')) {
+        this.npmInstall();
+      }
     }
   }
 
