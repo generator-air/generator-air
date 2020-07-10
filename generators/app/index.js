@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const questions = require('../../model/questions');
 const mapToGit = require('../../model/mapToGit');
+const pkg = require('../../package.json');
 //可以在terminal打印自定义样式的字
 require('colors');
 
@@ -20,57 +21,31 @@ module.exports = class extends Generator {
 
   /* 私有函数 */
   // 集成指定脚手架的 generator
-  _generatorCompose(answers) {
+  _generatorCompose(answers, repository) {
     const generatorArgs = [
       {
         seedName: this.seedName,
         answers,
         sourceRoot: this.sourceRoot(),
         destinationRoot: this.destinationRoot(),
+        airVersion: pkg.version,
+        repository,
       },
     ];
     this.composeWith(require.resolve(`../generator/${this.seedName}.js`), {
       arguments: generatorArgs,
     });
   }
-  // 获取脚手架模板的git仓库地址，并克隆
-  _repositoryClone(answers) {
+
+  // 获取脚手架模板的git仓库地址
+  async _getRepository(answers) {
     // 检查git命令是否存在
     if (!shell.which('git')) {
       shell.echo('发生错误。请确保您已经安装了Git');
       shell.exit(1);
     }
     const repository = mapToGit(answers);
-    if (repository) {
-      this.seedName = repository.slice(
-        repository.lastIndexOf('/') + 1,
-        repository.indexOf('.git')
-      );
-      // 进入 projects 目录
-      shell.cd(path.resolve(__dirname, '../../projects'));
-      const done = this.async();
-      // 查看当前项目，projects下是否已存在
-      fs.exists(this.seedName, async (exists) => {
-        // 如果已存在，让用户确认，是否重新clone
-        if (exists) {
-          const answer = await this.prompt({
-            type: 'confirm',
-            name: 'isUpdate',
-            message: '本地已存在脚手架模板，是否更新模板？',
-            default: true,
-          });
-          if (answer.isUpdate) {
-            // 删除原有文件夹，重新clone最新版的代码
-            shell.rm('-rf', this.seedName);
-            shell.exec(`git clone ${repository}`);
-          }
-        } else {
-          shell.exec(`git clone ${repository}`);
-        }
-        this._generatorCompose(answers);
-        done();
-      });
-    } else {
+    if (!repository) {
       this.log(
         '\n' +
           '啊哦...所选脚手架尚在开发中，请关注后续版本更新~^_^'.yellow +
@@ -78,6 +53,28 @@ module.exports = class extends Generator {
       );
       shell.exit(1);
     }
+    this.seedName = repository.slice(
+      repository.lastIndexOf('/') + 1,
+      repository.indexOf('.git')
+    );
+    // 进入 projects 目录
+    shell.cd(path.resolve(__dirname, '../../projects'));
+    // 查看当前项目，projects下是否已存在
+    const isExists = fs.existsSync(this.seedName);
+    // 如果已存在，让用户确认，是否重新clone
+    if (isExists) {
+      const answer = await this.prompt({
+        type: 'confirm',
+        name: 'isUpdate',
+        message: '本地已存在脚手架模板，是否更新模板？',
+        default: true,
+      });
+      if (answer.isUpdate) {
+        // 删除原有文件夹，重新clone最新版的代码
+        shell.rm('-rf', this.seedName);
+      }
+    }
+    this._generatorCompose(answers, repository);
   }
 
   /* 生命周期函数 执行顺序，如下注释所示 */
@@ -118,7 +115,7 @@ module.exports = class extends Generator {
     const answers = this.answers;
     if (answers) {
       // 根据用户选择，获取对应的 git 仓库，并进行 clone
-      this._repositoryClone(answers);
+      this._getRepository(answers);
     }
   }
 
