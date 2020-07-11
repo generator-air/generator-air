@@ -44,6 +44,7 @@ module.exports = class extends Generator {
     });
     this.log('tag:', tag);
     if (tag) {
+      shell.exec('git config --global advice.detachedHead false');
       shell.exec(`git clone --branch ${tag} ${repository}`);
     } else {
       shell.exec(`git clone ${repository}`);
