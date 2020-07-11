@@ -36,6 +36,7 @@ module.exports = class extends Generator {
     const map = {
       'v1.0.0': /0\.\d\.\d/,
       'v2.0.0': /1\.0\.\d/,
+      'v3.0.0': /1\.1\.\d/,
     };
     Object.keys(map).forEach((key) => {
       if (airVersion.match(map[key])) {
@@ -255,7 +256,7 @@ module.exports = class extends Generator {
         type: 'confirm',
         name: 'isInstall',
         message: '项目已生成，是否现在安装依赖包？',
-        default: false,
+        default: true,
       },
     ]);
     if (answer.isInstall) {
