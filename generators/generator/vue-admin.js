@@ -1,6 +1,7 @@
 const Generator = require('yeoman-generator');
 const shell = require('shelljs');
 const fs = require('fs');
+const tagMap = require('../../model/mapToTag/vue-admin');
 //可以在terminal打印自定义样式的字
 require('colors');
 
@@ -32,14 +33,8 @@ module.exports = class extends Generator {
   // 根据 air 版本号，clone 相应版本的模板
   _repositoryClone(airVersion, repository) {
     let tag = '';
-    // vue-admin tag版本号 => generator-air 版本号
-    const map = {
-      'v1.0.0': /0\.\d\.\d/,
-      'v2.0.0': /1\.0\.\d/,
-      'v3.0.0': /1\.1\.\d/,
-    };
-    Object.keys(map).forEach((key) => {
-      if (airVersion.match(map[key])) {
+    Object.keys(tagMap).forEach((key) => {
+      if (airVersion.match(tagMap[key])) {
         tag = key;
       }
     });
