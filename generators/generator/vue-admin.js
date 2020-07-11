@@ -44,6 +44,8 @@ module.exports = class extends Generator {
     });
     console.log('tag:', tag);
     if (tag) {
+      // 禁掉tag切换警告
+      shell.exec('git config --global advice.detachedHead false');
       shell.exec(`git clone --branch ${tag} ${repository}`);
     } else {
       shell.exec(`git clone ${repository}`);
