@@ -81,6 +81,14 @@ module.exports = class extends Generator {
   // No1
   initializing() {
     this.log('initializing:', 1);
+    // 如果开发者没有安装feflow
+    if (!shell.which('fef')) {
+      this.log(
+        '【warning】generator-air基于feflow构建，请先全局安装 feflow: '.red +
+          'npm install @feflow/cli -g'.yellow
+      );
+      shell.exit(1);
+    }
     fs.exists(path.resolve(__dirname, '../../projects'), (exists) => {
       if (!exists) {
         // 创建用于存放脚手架模板的目录
@@ -102,6 +110,8 @@ module.exports = class extends Generator {
   // No3
   configuring() {
     this.log('configuring:', 3);
+    // 安装 generator-air 配套 feflow 插件
+    // shell.exec('fef install @generator-air/feflow-plugin-air');
     const answers = this.answers;
     if (answers) {
       // 根据用户选择，获取对应的 git 仓库，并进行 clone

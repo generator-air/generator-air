@@ -1,9 +1,2 @@
 node_modules
 projects
-
-.eslintignore
-.prettierignore
-.prettierrc
-.yo-rc.json
-package.json
-yarn.lock

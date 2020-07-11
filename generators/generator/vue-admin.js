@@ -42,7 +42,7 @@ module.exports = class extends Generator {
         tag = key;
       }
     });
-    this.log('tag2:', tag);
+    this.log('tag:', tag);
     if (tag) {
       shell.exec(`git clone --branch ${tag} ${repository}`);
     } else {
@@ -99,7 +99,7 @@ module.exports = class extends Generator {
       MOCK_SERVER_NAME,
     } = require(`${templatePath}/const/constants.js`);
 
-    /* config.js + gulpfile.js 生成 */
+    /* config.js 生成 */
     const configFileTemplates = fs.readdirSync(
       this.templatePath(`${this.seedName}/templates/configTemplates`)
     );
@@ -190,11 +190,6 @@ module.exports = class extends Generator {
       name: projectName,
       dependencies,
       devDependencies,
-      'lint-staged': {
-        '*.js': ['vue-cli-service lint', 'git add'],
-        '*.vue': ['vue-cli-service lint', 'git add'],
-      },
-      'pre-commit': 'lint',
     };
     // this.destinationPath 指定要写入 pkgJson 的目标 package.json
     this.fs.extendJSON(
