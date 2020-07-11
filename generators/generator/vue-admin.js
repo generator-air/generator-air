@@ -42,7 +42,7 @@ module.exports = class extends Generator {
         tag = key;
       }
     });
-    console.log('tag:', tag);
+    this.log('tag:', tag);
     if (tag) {
       // 禁掉tag切换警告
       shell.exec('git config --global advice.detachedHead false');
