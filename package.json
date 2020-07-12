@@ -12,7 +12,9 @@
   },
   "files": [
     "generators",
-    "model"
+    "model",
+    "projectsTemplates",
+    "LICENSE"
   ],
   "author": "Sherry",
   "license": "MIT",
