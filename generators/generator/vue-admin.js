@@ -10,8 +10,7 @@ module.exports = class extends Generator {
   constructor(args, opts) {
     // 必需的 super
     super(args, opts);
-    const { seedName, answers, sourceRoot, destinationRoot } = args[0];
-    this.seedName = seedName;
+    const { answers, sourceRoot, destinationRoot } = args[0];
     this.answers = answers;
     // 指定脚手架模板目录
     this.sourceRoot(sourceRoot);
@@ -37,7 +36,7 @@ module.exports = class extends Generator {
     // 复制模板文件夹下的内容，到目标文件夹（注：这里无法复制.开头的文件。如.eslintrc）
     this.fs.copyTpl(
       // 以 `${this.sourceRoot}/${this.seedName}` 文件夹为模板
-      this.templatePath(this.seedName),
+      this.templatePath(),
       // 将模板文件夹下的所有内容，复制到 `${this.destinationRoot}/${this.answers.projectName}` 文件夹
       this.destinationPath(this.answers.projectName),
       // 输出给模板的参数
@@ -47,9 +46,7 @@ module.exports = class extends Generator {
 
   // 根据模板项目包含的模板文件，生成使用者期望的代码
   _generateFiles() {
-    const templatePath = `${this.sourceRoot()}/${
-      this.seedName
-    }/templates`;
+    const templatePath = this.templatePath('templates');
 
     const {
       mockServerTask,
@@ -63,18 +60,18 @@ module.exports = class extends Generator {
       menuHandler,
       authMenuHandler,
       operationMenu,
-      logMenu
+      logMenu,
     } = require(`${templatePath}/const/code.js`);
 
     const {
       LOCAL_MOCK_HOST,
       ONLINE_MOCK_HOST,
-      MOCK_SERVER_NAME
+      MOCK_SERVER_NAME,
     } = require(`${templatePath}/const/constants.js`);
 
     /* config.js + gulpfile.js 生成 */
     const configFileTemplates = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates/configTemplates`)
+      this.templatePath('templates/configTemplates')
     );
     configFileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/configTemplates/${fileName}`);
@@ -82,16 +79,16 @@ module.exports = class extends Generator {
       const mockConfig = {
         mockHost: localMock ? LOCAL_MOCK_HOST : ONLINE_MOCK_HOST,
         mockServerName: localMock ? `\n  '${MOCK_SERVER_NAME}',` : '',
-        mockServerTask: localMock ? mockServerTask : ''
+        mockServerTask: localMock ? mockServerTask : '',
       };
       const file = generateFile(mockConfig);
-      const filePath = this.templatePath(`${this.seedName}/${fileName}`);
+      const filePath = this.templatePath(fileName);
       fs.writeFileSync(filePath, file);
     });
 
     /* router/index.js + menu.js 生成 */
     const fileTemplates = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates/fileTemplates`)
+      this.templatePath('templates/fileTemplates')
     );
     fileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/fileTemplates/${fileName}`);
@@ -101,21 +98,23 @@ module.exports = class extends Generator {
         notifyImport: selfLogin ? '' : notifyImport,
         loginPageImport: selfLogin ? loginPageImport : '',
         loginPageRoute: selfLogin ? loginPageRoute : '',
-        redirectHandler: selfLogin ? selfLoginRedirectHandler : thirdLoginRedirectHandler,
+        redirectHandler: selfLogin
+          ? selfLoginRedirectHandler
+          : thirdLoginRedirectHandler,
         authImport: useAuth ? authImport : '',
         routeHandler: useAuth ? routeHandler : '',
         menuHandler: useAuth ? authMenuHandler : menuHandler,
         operationMenu: useAuth ? operationMenu : '',
-        logMenu: useLog ? logMenu : ''
+        logMenu: useLog ? logMenu : '',
       };
       const file = generateFile(fileConfig);
       let filePath = '';
       switch (fileName) {
         case 'routerIndex.js':
-          filePath = this.templatePath(`${this.seedName}/src/router/index.js`);
+          filePath = this.templatePath('src/router/index.js');
           break;
         case 'menu.js':
-          filePath = this.templatePath(`${this.seedName}/src/model/menu.js`);
+          filePath = this.templatePath('src/model/menu.js');
           break;
         default:
           break;
@@ -126,14 +125,12 @@ module.exports = class extends Generator {
 
   // mock相关配置文件 + .开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
   _configFileCopy() {
-    const files = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates/configFiles`)
-    );
+    const files = fs.readdirSync(this.templatePath('templates/configFiles'));
     // 将configs下以_开头的配置文件逐个格式化成以.开头
     files.forEach((file) => {
       const formatFile = file.replace('_', '.');
       this.fs.copyTpl(
-        this.templatePath(`${this.seedName}/templates/configFiles/${file}`),
+        this.templatePath(`templates/configFiles/${file}`),
         this.destinationPath(`${this.answers.projectName}/${formatFile}`)
       );
     });
@@ -179,10 +176,10 @@ module.exports = class extends Generator {
     const { mockType, loginType, useAuth, useLog } = this.answers;
     shell.rm('-rf', `${projectPath}/templates`);
     if (mockType !== 'local') {
-      shell.rm('-rf',`${projectPath}/mock`);
+      shell.rm('-rf', `${projectPath}/mock`);
     }
     if (loginType !== 'self') {
-       shell.rm('-rf',`${projectPath}/src/pages/login.vue`);
+      shell.rm('-rf', `${projectPath}/src/pages/login.vue`);
     }
     if (!useAuth) {
       shell.rm('-rf', `${projectPath}/src/model/authDict.js`);
@@ -198,54 +195,58 @@ module.exports = class extends Generator {
 
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No5
-  writing() {
-    this.log('generator writing:', 5);
-    const done = this.async();
-    fs.exists(
-      `${this.destinationRoot()}/${this.answers.projectName}`,
-      async (exists) => {
-        // 如果用户当前目录下，已存在同名项目
-        if (exists) {
-          const answer = await this.prompt({
-            type: 'confirm',
-            name: 'isReCreate',
-            message: '即将创建的项目已存在，是否要覆盖已有项目？',
-          });
-          if (answer.isReCreate) {
-            shell.rm(
-              '-rf',
-              `${this.destinationRoot()}/${this.answers.projectName}`
-            );
-            this._fileCopy();
-          } else {
-            this.log('\n' + '结束创建。' + '\n');
-            shell.exit(1);
-          }
-        } else {
-          this._fileCopy();
-        }
-        done();
-      }
+  async writing() {
+    const isExists = fs.existsSync(
+      `${this.destinationRoot()}/${this.answers.projectName}`
     );
+    // 如果用户当前目录下，已存在同名项目
+    if (isExists) {
+      const answer = await this.prompt({
+        type: 'confirm',
+        name: 'isReCreate',
+        message: '即将创建的项目名称已存在，是否要覆盖已有项目？',
+      });
+      if (answer.isReCreate) {
+        shell.rm(
+          '-rf',
+          `${this.destinationRoot()}/${this.answers.projectName}`
+        );
+        this._fileCopy();
+      } else {
+        this.log('\n' + '结束创建。' + '\n');
+        shell.exit(1);
+      }
+    } else {
+      this._fileCopy();
+    }
   }
 
   // No7
-  install() {
-    this.log('generator install:', 7);
-    // 进入刚刚创建的脚手架目录
-    shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
-    // 检查是否安装了yarn
-    if (shell.which('yarn')) {
-      // 执行npm包安装
-      this.yarnInstall();
-    } else if (shell.which('npm')) {
-      this.npmInstall();
+  async install() {
+    const answer = await this.prompt([
+      {
+        type: 'confirm',
+        name: 'isInstall',
+        message: '项目已生成，是否现在安装依赖包？',
+        default: true,
+      },
+    ]);
+    if (answer.isInstall) {
+      this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉'.yellow);
+      // 进入刚刚创建的脚手架目录
+      shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
+      // 检查是否安装了yarn
+      if (shell.which('yarn')) {
+        // 执行npm包安装
+        this.yarnInstall();
+      } else if (shell.which('npm')) {
+        this.npmInstall();
+      }
     }
   }
 
   // No8
   end() {
-    this.log('generator end:', 8);
     this._foldersDelete();
     this.log(
       '\n' + 'Congratulations! Project created successfully ~ '.green + '\n'

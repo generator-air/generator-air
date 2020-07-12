@@ -1,18 +1,18 @@
 module.exports = {
-  "env": {
-      "commonjs": true,
-      "es6": true,
-      "node": true
+  root: true,
+  parser: 'babel-eslint',
+  env: {
+    commonjs: true,
+    es6: true,
+    node: true,
   },
-  "extends": "eslint:recommended",
-  'parser': 'babel-eslint',
-  "parserOptions": {
-      "ecmaVersion": 2018
+  extends: ['eslint:recommended', 'prettier'],
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
   },
-  "globals": {
-    "location": "readonly"
+  rules: {
+    'prettier/prettier': 'error',
   },
-  "rules": {
-      'semi': ['error', 'always']
-  }
+  plugins: ['prettier'],
 };
