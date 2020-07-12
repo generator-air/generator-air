@@ -1,6 +1,6 @@
 {
   "name": "generator-air",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "scripts": {
     "lint": "eslint .",
@@ -8,7 +8,10 @@
   },
   "files": [
     "generators",
-    "model"
+    "model",
+    "projectsTemplates",
+    "assets",
+    "LICENSE"
   ],
   "author": "Sherry",
   "license": "MIT",
@@ -26,6 +29,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^6.2.2",
+    "execa": "^4.0.3",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
     "prettier": "^2.0.5"
