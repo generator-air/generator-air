@@ -1,6 +1,6 @@
 {
   "name": "generator-air",
-  "version": "1.1.3",
+  "version": "3.0.0",
   "description": "轻量的前端脚手架 —— generator-air",
   "scripts": {
     "release_major": "npm version major",
@@ -12,7 +12,9 @@
   },
   "files": [
     "generators",
-    "model"
+    "model",
+    "projectsTemplates",
+    "LICENSE"
   ],
   "author": "Sherry",
   "license": "MIT",
@@ -29,6 +31,7 @@
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-vue": "^6.2.2",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
     "prettier": "^2.0.5"

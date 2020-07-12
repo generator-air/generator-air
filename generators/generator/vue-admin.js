@@ -1,7 +1,6 @@
 const Generator = require('yeoman-generator');
 const shell = require('shelljs');
 const fs = require('fs');
-const tagMap = require('../../model/mapToTag/vue-admin');
 //可以在terminal打印自定义样式的字
 require('colors');
 
@@ -11,17 +10,7 @@ module.exports = class extends Generator {
   constructor(args, opts) {
     // 必需的 super
     super(args, opts);
-    const {
-      seedName,
-      answers,
-      sourceRoot,
-      destinationRoot,
-      airVersion,
-      repository,
-    } = args[0];
-    // 根据 air 版本号，clone 相应版本的模板
-    this._repositoryClone(airVersion, repository);
-    this.seedName = seedName;
+    const { answers, sourceRoot, destinationRoot } = args[0];
     this.answers = answers;
     // 指定脚手架模板目录
     this.sourceRoot(sourceRoot);
@@ -30,23 +19,6 @@ module.exports = class extends Generator {
   }
 
   /* 私有函数 */
-  // 根据 air 版本号，clone 相应版本的模板
-  _repositoryClone(airVersion, repository) {
-    let tag = '';
-    Object.keys(tagMap).forEach((key) => {
-      if (airVersion.match(tagMap[key])) {
-        tag = key;
-      }
-    });
-    this.log('tag:', tag);
-    if (tag) {
-      // 禁掉tag切换警告
-      shell.exec('git config --global advice.detachedHead false');
-      shell.exec(`git clone --branch ${tag} ${repository}`);
-    } else {
-      shell.exec(`git clone ${repository}`);
-    }
-  }
   // 统一的脚手架模板复制入口
   _fileCopy() {
     // 根据模板js文件，生成js代码
@@ -63,8 +35,7 @@ module.exports = class extends Generator {
   _normalFileCopy() {
     // 复制模板文件夹下的内容，到目标文件夹（注：这里无法复制.开头的文件。如.eslintrc）
     this.fs.copyTpl(
-      // 以 `${this.sourceRoot}/${this.seedName}` 文件夹为模板
-      this.templatePath(this.seedName),
+      this.templatePath(),
       // 将模板文件夹下的所有内容，复制到 `${this.destinationRoot}/${this.answers.projectName}` 文件夹
       this.destinationPath(this.answers.projectName),
       // 输出给模板的参数
@@ -74,7 +45,7 @@ module.exports = class extends Generator {
 
   // 根据模板项目包含的模板文件，生成使用者期望的代码
   _generateFiles() {
-    const templatePath = `${this.sourceRoot()}/${this.seedName}/templates`;
+    const templatePath = this.templatePath('templates');
 
     const {
       mockServerTask,
@@ -98,7 +69,7 @@ module.exports = class extends Generator {
 
     /* config.js 生成 */
     const configFileTemplates = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates/configTemplates`)
+      this.templatePath('templates/configTemplates')
     );
     configFileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/configTemplates/${fileName}`);
@@ -109,13 +80,13 @@ module.exports = class extends Generator {
         mockServerTask: localMock ? mockServerTask : '',
       };
       const file = generateFile(mockConfig);
-      const filePath = this.templatePath(`${this.seedName}/config/${fileName}`);
+      const filePath = this.templatePath(`config/${fileName}`);
       fs.writeFileSync(filePath, file);
     });
 
     /* router/index.js + menu.js 生成 */
     const fileTemplates = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates/fileTemplates`)
+      this.templatePath('templates/fileTemplates')
     );
     fileTemplates.forEach((fileName) => {
       const generateFile = require(`${templatePath}/fileTemplates/${fileName}`);
@@ -137,10 +108,10 @@ module.exports = class extends Generator {
       let filePath = '';
       switch (fileName) {
         case 'routerIndex.js':
-          filePath = this.templatePath(`${this.seedName}/src/router/index.js`);
+          filePath = this.templatePath('src/router/index.js');
           break;
         case 'menu.js':
-          filePath = this.templatePath(`${this.seedName}/src/model/menu.js`);
+          filePath = this.templatePath('src/model/menu.js');
           break;
         default:
           break;
@@ -151,14 +122,12 @@ module.exports = class extends Generator {
 
   // .开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
   _configFileCopy() {
-    const files = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates/configFiles`)
-    );
+    const files = fs.readdirSync(this.templatePath('templates/configFiles'));
     // 将configs下以_开头的配置文件逐个格式化成以.开头
     files.forEach((file) => {
       const formatFile = file.replace('_', '.');
       this.fs.copyTpl(
-        this.templatePath(`${this.seedName}/templates/configFiles/${file}`),
+        this.templatePath(`templates/configFiles/${file}`),
         this.destinationPath(`${this.answers.projectName}/${formatFile}`)
       );
     });

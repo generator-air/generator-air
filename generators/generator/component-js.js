@@ -10,8 +10,7 @@ module.exports = class extends Generator {
   constructor(args, opts) {
     // 必需的 super
     super(args, opts);
-    const { seedName, answers, sourceRoot, destinationRoot } = args[0];
-    this.seedName = seedName;
+    const { answers, sourceRoot, destinationRoot } = args[0];
     this.answers = answers;
     // 指定脚手架模板目录
     this.sourceRoot(sourceRoot);
@@ -33,8 +32,7 @@ module.exports = class extends Generator {
   _normalFileCopy() {
     // 复制模板文件夹下的内容，到目标文件夹（注：这里无法复制.开头的文件。如.eslintrc）
     this.fs.copyTpl(
-      // 以 `${this.sourceRoot}/${this.seedName}` 文件夹为模板
-      this.templatePath(this.seedName),
+      this.templatePath(),
       // 将模板文件夹下的所有内容，复制到 `${this.destinationRoot}/${this.answers.projectName}` 文件夹
       this.destinationPath(this.answers.projectName),
       // 输出给模板的参数
@@ -44,14 +42,12 @@ module.exports = class extends Generator {
 
   // .开头的文件复制（模板脚手架中，对.开头文件进行特殊处理，以_开头，以确保可以成功复制）
   _configFileCopy() {
-    const files = fs.readdirSync(
-      this.templatePath(`${this.seedName}/templates`)
-    );
+    const files = fs.readdirSync(this.templatePath('templates'));
     // 将configs下以_开头的配置文件逐个格式化成以.开头
     files.forEach((file) => {
       const formatFile = file.replace('_', '.');
       this.fs.copyTpl(
-        this.templatePath(`${this.seedName}/templates/${file}`),
+        this.templatePath(`templates/${file}`),
         this.destinationPath(`${this.answers.projectName}/${formatFile}`)
       );
     });
@@ -65,7 +61,7 @@ module.exports = class extends Generator {
     };
     // this.destinationPath 指定要写入 pkgJson 的目标 package.json
     this.fs.extendJSON(
-      this.destinationPath(`${this.answers.projectName}/package.json`),
+      this.destinationPath(`${projectName}/package.json`),
       pkgJson
     );
   }
@@ -78,9 +74,8 @@ module.exports = class extends Generator {
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No5
   async writing() {
-    const isExists = fs.existsSync(
-      `${this.destinationRoot()}/${this.answers.projectName}`
-    );
+    const { projectName } = this.answers;
+    const isExists = fs.existsSync(`${this.destinationRoot()}/${projectName}`);
     // 如果用户当前目录下，已存在同名项目
     if (isExists) {
       const answer = await this.prompt({
@@ -89,10 +84,7 @@ module.exports = class extends Generator {
         message: '即将创建的项目名称已存在，是否要覆盖已有项目？',
       });
       if (answer.isReCreate) {
-        shell.rm(
-          '-rf',
-          `${this.destinationRoot()}/${this.answers.projectName}`
-        );
+        shell.rm('-rf', `${this.destinationRoot()}/${projectName}`);
         this._fileCopy();
       } else {
         this.log('\n' + '结束创建。' + '\n');
@@ -104,16 +96,26 @@ module.exports = class extends Generator {
   }
 
   // No7
-  install() {
-    this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉'.yellow);
-    // 进入刚刚创建的脚手架目录
-    shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
-    // 检查是否安装了yarn
-    if (shell.which('yarn')) {
-      // 执行npm包安装
-      this.yarnInstall();
-    } else if (shell.which('npm')) {
-      this.npmInstall();
+  async install() {
+    const answer = await this.prompt([
+      {
+        type: 'confirm',
+        name: 'isInstall',
+        message: '项目已生成，是否现在安装依赖包？',
+        default: true,
+      },
+    ]);
+    if (answer.isInstall) {
+      this.log('即将为您安装项目依赖包，请稍候几秒钟哦~😉'.yellow);
+      // 进入刚刚创建的脚手架目录
+      shell.cd(`${this.destinationRoot()}/${this.answers.projectName}`);
+      // 检查是否安装了yarn
+      if (shell.which('yarn')) {
+        // 执行npm包安装
+        this.yarnInstall();
+      } else if (shell.which('npm')) {
+        this.npmInstall();
+      }
     }
   }
 
