@@ -1,5 +1,5 @@
 const dictionary = {
-  pc_vue: 'https://git.code.tencent.com/FAJG-FE/vue-admin.git',
+  pc_vue: 'vue-admin',
   pc_react: '',
   h5_vue: '',
   h5_react: '',
@@ -13,9 +13,9 @@ const dictionary = {
   component_react: '',
 };
 
-function mapToGit(answers) {
+function mapToTemplate(answers) {
   const { type, framework } = answers;
   return dictionary[`${type}_${framework}`];
 }
 
-module.exports = mapToGit;
+module.exports = mapToTemplate;
