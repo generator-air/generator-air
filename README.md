@@ -81,7 +81,7 @@ npm run dev
 
 NodeJS-koa（开发中）
 
-组件工具-原生 js（开发中）
+<a href="https://github.com/generator-air/component-js">组件工具-原生 js（已支持）</a>
 
 组件工具-vue 组件（开发中）
 
