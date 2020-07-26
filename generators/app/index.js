@@ -1,8 +1,11 @@
 const Generator = require('yeoman-generator');
 const shell = require('shelljs');
 const path = require('path');
+const updateNotifier = require('update-notifier');
+const pkg = require('../../package.json'); // 命令行工具自己的 package 信息
 const questions = require('../../model/questions');
 const mapToTemplate = require('../../model/mapToTemplate');
+
 //可以在terminal打印自定义样式的字
 require('colors');
 
@@ -45,7 +48,13 @@ module.exports = class extends Generator {
 
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No1
-  initializing() {
+  async initializing() {
+    // 版本更新检查
+    const notifier = updateNotifier({ pkg, updateCheckInterval: 0 });
+    if (notifier.update) {
+      notifier.notify({ isGlobal: true });
+      shell.exit(1);
+    }
     // 如果开发者没有安装feflow
     if (!shell.which('fef')) {
       this.log(

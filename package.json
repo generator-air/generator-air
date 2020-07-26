@@ -1,6 +1,6 @@
 {
   "name": "generator-air",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "轻量的前端脚手架 —— generator-air",
   "scripts": {
     "release_major": "npm version major",
@@ -24,6 +24,7 @@
   ],
   "dependencies": {
     "shelljs": "^0.8.3",
+    "update-notifier": "^4.1.0",
     "yeoman-generator": "^4.2.0"
   },
   "devDependencies": {

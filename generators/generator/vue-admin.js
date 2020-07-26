@@ -1,8 +1,6 @@
 const Generator = require('yeoman-generator');
 const shell = require('shelljs');
 const fs = require('fs');
-//可以在terminal打印自定义样式的字
-require('colors');
 
 // 所有操作，均在用户执行 yo air 的目录下
 module.exports = class extends Generator {
