@@ -1,10 +1,12 @@
 const Generator = require('yeoman-generator');
 const shell = require('shelljs');
+const fs = require('fs');
 const path = require('path');
 const updateNotifier = require('update-notifier');
-const pkg = require('../../package.json'); // 命令行工具自己的 package 信息
-const questions = require('../../model/questions');
-const mapToTemplate = require('../../model/mapToTemplate');
+const pkg = require('../../package.json');
+const commonQs = require('../../model/commonQs');
+const getTagQs = require('../../model/tagQs');
+const mapToGit = require('../../model/mapToGit');
 
 //可以在terminal打印自定义样式的字
 require('colors');
@@ -21,10 +23,10 @@ module.exports = class extends Generator {
   }
 
   /* 私有函数 */
-  // 集成指定脚手架的 generator
-  _generatorCompose(answers) {
-    this.seedName = mapToTemplate(answers);
-    if (!this.seedName) {
+  // 获取脚手架模板的git仓库地址
+  async _getRepository(answers) {
+    const repository = mapToGit(answers);
+    if (!repository) {
       this.log(
         '\n' +
           '啊哦...所选脚手架尚在开发中，请关注后续版本更新~^_^'.yellow +
@@ -32,18 +34,76 @@ module.exports = class extends Generator {
       );
       shell.exit(1);
     }
-    const generatorArgs = [
-      {
-        answers,
-        sourceRoot: this.sourceRoot(
-          path.resolve(__dirname, `../../projectsTemplates/${this.seedName}`)
-        ),
-        destinationRoot: this.destinationRoot(path.resolve(process.cwd())),
-      },
-    ];
-    this.composeWith(require.resolve(`../generator/${this.seedName}.js`), {
-      arguments: generatorArgs,
+    this.seedName = repository.slice(
+      repository.lastIndexOf('/') + 1,
+      repository.indexOf('.git')
+    );
+    // 进入 projects 目录
+    shell.cd(path.resolve(__dirname, '../../projects'));
+    // 查看当前项目，projects下是否已存在
+    const isExists = fs.existsSync(this.seedName);
+    if (!isExists) {
+      // 让用户选择clone的模板版本
+      this._tagChoose(answers, repository);
+      return;
+    }
+    // 如果已存在，让用户确认，是否重新clone
+    const answer = await this.prompt({
+      type: 'confirm',
+      name: 'isUpdate',
+      message: '本地已存在脚手架模板，是否更新模板？',
+      default: true,
     });
+    if (!answer.isUpdate) {
+      this._generatorCompose();
+      return;
+    }
+    // 如果需要更新模板，删除原有文件夹，重新clone
+    shell.rm('-rf', this.seedName);
+    // 让用户选择clone的模板版本
+    this._tagChoose(answers, repository);
+  }
+
+  // 拉取指定仓库的所有tag，供用户选择
+  _tagChoose(answers, repository) {
+    shell.exec(
+      `git ls-remote --tags ${repository}`,
+      { silent: true },
+      async (code, stdout) => {
+        const tagInfos = stdout.split('\n');
+        // split切割出的最后一项是空项，手动弹出，删除空项
+        tagInfos.pop();
+        const tags = [];
+        tagInfos.forEach((tagInfo) => {
+          const start = tagInfo.lastIndexOf('/') + 1;
+          const tag = tagInfo.substring(start);
+          tags.push(tag);
+        });
+        const tagQs = getTagQs(tags);
+        const tagAnswer = await this.prompt(tagQs);
+        // 根据用户选择的版本，拉取模板+generator代码
+        if (tagAnswer.version === 'latest') {
+          shell.exec(`git clone ${repository}`);
+        } else {
+          // 禁掉tag切换警告
+          shell.exec('git config --global advice.detachedHead false');
+          shell.exec(`git clone --branch ${tagAnswer.version} ${repository}`);
+        }
+        this._generatorCompose();
+      }
+    );
+  }
+
+  // 集成指定脚手架的 generator
+  _generatorCompose() {
+    this.composeWith(
+      require.resolve(
+        path.resolve(
+          __dirname,
+          `../../projects/${this.seedName}/generator/generator.js`
+        )
+      )
+    );
   }
 
   /* 生命周期函数 执行顺序，如下注释所示 */
@@ -55,6 +115,11 @@ module.exports = class extends Generator {
       notifier.notify({ isGlobal: true });
       shell.exit(1);
     }
+    // 检查git命令是否存在
+    if (!shell.which('git')) {
+      this.log('对不起，检查到您本地没有安装git，请安装后再次操作'.yellow);
+      shell.exit(1);
+    }
     // 如果开发者没有安装feflow
     if (!shell.which('fef')) {
       this.log(
@@ -63,19 +128,24 @@ module.exports = class extends Generator {
       );
       shell.exit(1);
     }
+    const isExists = fs.existsSync(path.resolve(__dirname, '../../projects'));
+    if (!isExists) {
+      // 创建用于存放脚手架模板的目录
+      fs.mkdirSync(path.resolve(__dirname, '../../projects'));
+    }
   }
 
   // No2
   async prompting() {
-    this.answers = await this.prompt(questions);
+    this.answers = await this.prompt(commonQs);
   }
 
   // No3
   configuring() {
     const answers = this.answers;
     if (answers) {
-      // 根据用户选择，走对应的 generator 逻辑
-      this._generatorCompose(answers);
+      // 根据用户选择，获取对应的 git 仓库，并进行 clone
+      this._getRepository(answers);
     }
   }
 

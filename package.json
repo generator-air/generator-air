@@ -1,6 +1,6 @@
 {
   "name": "generator-air",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "轻量的前端脚手架 —— generator-air",
   "scripts": {
     "release_major": "npm version major",
@@ -13,7 +13,6 @@
   "files": [
     "generators",
     "model",
-    "projectsTemplates",
     "LICENSE"
   ],
   "author": "Sherry",

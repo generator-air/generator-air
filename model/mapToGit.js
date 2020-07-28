@@ -1,5 +1,5 @@
 const dictionary = {
-  pc_vue: 'vue-admin',
+  pc_vue: 'https://git.code.tencent.com/generator-air/vue-admin.git',
   pc_react: '',
   h5_vue: '',
   h5_react: '',
@@ -8,14 +8,14 @@ const dictionary = {
   miniprogram_wepy: '',
   node_koa: '',
   node_express: '',
-  component_js: 'component-js',
+  component_js: 'https://git.code.tencent.com/generator-air/component-js.git',
   component_vue: '',
   component_react: '',
 };
 
-function mapToTemplate(answers) {
+function mapToGit(answers) {
   const { type, framework } = answers;
   return dictionary[`${type}_${framework}`];
 }
 
-module.exports = mapToTemplate;
+module.exports = mapToGit;
