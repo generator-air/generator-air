@@ -16,11 +16,11 @@ generator-air —— 有态度、有质量、无重量的脚手架生成器。
 ## 1.安装
 
 ```shell
-npm install -g yo
+npm install -g @feflow/cli
 ```
 
 ```shell
-npm install -g generator-air
+fef install generator-air
 ```
 
 <br>
@@ -30,12 +30,12 @@ npm install -g generator-air
 任意目录下（如：tmp 目录）执行：
 
 ```shell
-yo air
+fef init
 ```
 
 <br>
 
-根据提示，按需选择。
+根据提示，选择：轻量的前端脚手架 —— generator-air，进行项目创建。
 
 <br>
 
@@ -44,14 +44,14 @@ yo air
 进入刚刚创建的项目根目录，执行：
 
 ```shell
-npm run dev
+fef dev
 ```
 
 <br>
 
 出现下图，则启动成功：
 
-![image](https://7368-shryzhang-test-13eb29-1258821855.tcb.qcloud.la/generator-air/npm_run_dev.png?sign=4462018a84a6989d4705851fbfe83261&t=1592310622)
+![image](https://7368-shryzhang-test-13eb29-1258821855.tcb.qcloud.la/generator-air/fef_dev.jpg?sign=91a31d65ac90e9c5a45daf8bf4831a86&t=1592310637)
 
 <br>
 
@@ -62,10 +62,6 @@ npm run dev
 <br>
 
 # 三、各款脚手架介绍
-
-<!-- <a href="javascript:location.href=document.URL.replace('generator-air', 'vue-admin')">
-管理端-vue（已支持）
-</a> -->
 
 <a href="https://github.com/generator-air/vue-admin">管理端-vue（已支持）</a>
 
