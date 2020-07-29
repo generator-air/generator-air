@@ -1,6 +1,6 @@
 {
   "name": "generator-air",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "轻量的前端脚手架 —— generator-air",
   "scripts": {
     "release_major": "npm version major",
@@ -17,7 +17,7 @@
   ],
   "author": "Sherry",
   "license": "MIT",
-  "repository": "https://git.code.tencent.com/FAJG-FE/generator-air.git",
+  "repository": "https://github.com/generator-air/generator-air",
   "keywords": [
     "yeoman-generator"
   ],
