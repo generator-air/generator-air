@@ -44,7 +44,7 @@ module.exports = class extends Generator {
     const isExists = fs.existsSync(this.seedName);
     if (!isExists) {
       // 让用户选择clone的模板版本
-      this._tagChoose(answers, repository);
+      this._tagChoose(repository);
       return;
     }
     // 如果已存在，让用户确认，是否重新clone
@@ -61,11 +61,11 @@ module.exports = class extends Generator {
     // 如果需要更新模板，删除原有文件夹，重新clone
     shell.rm('-rf', this.seedName);
     // 让用户选择clone的模板版本
-    this._tagChoose(answers, repository);
+    this._tagChoose(repository);
   }
 
   // 拉取指定仓库的所有tag，供用户选择
-  _tagChoose(answers, repository) {
+  _tagChoose(repository) {
     shell.exec(
       `git ls-remote --tags ${repository}`,
       { silent: true },
@@ -75,9 +75,12 @@ module.exports = class extends Generator {
         tagInfos.pop();
         const tags = [];
         tagInfos.forEach((tagInfo) => {
-          const start = tagInfo.lastIndexOf('/') + 1;
-          const tag = tagInfo.substring(start);
-          tags.push(tag);
+          // 手动删除带有^{}的tag标签（这类标签是怎样产生的，待查）
+          if (tagInfo.indexOf('{}') === -1) {
+            const start = tagInfo.lastIndexOf('/') + 1;
+            const tag = tagInfo.substring(start);
+            tags.push(tag);
+          }
         });
         const tagQs = getTagQs(tags);
         const tagAnswer = await this.prompt(tagQs);
@@ -137,17 +140,17 @@ module.exports = class extends Generator {
 
   // No2
   async prompting() {
-    this.answers = await this.prompt(commonQs);
-  }
-
-  // No3
-  configuring() {
-    const answers = this.answers;
+    const answers = await this.prompt(commonQs);
     if (answers) {
       // 根据用户选择，获取对应的 git 仓库，并进行 clone
       this._getRepository(answers);
     }
   }
+
+  // No3
+  // configuring() {
+  // 		this.log('configuring:', 3);
+  // }
 
   // 	// No4
   // 	default() {
