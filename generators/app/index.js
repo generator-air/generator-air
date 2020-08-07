@@ -3,6 +3,7 @@ const shell = require('shelljs');
 const fs = require('fs');
 const path = require('path');
 const updateNotifier = require('update-notifier');
+const semver = require('semver');
 const pkg = require('../../package.json');
 const commonQs = require('../../model/commonQs');
 const getTagQs = require('../../model/tagQs');
@@ -23,6 +24,51 @@ module.exports = class extends Generator {
   }
 
   /* 私有函数 */
+  // node 版本检查
+  _checkNodeVersion(wanted) {
+    // process.version 可以获取当前的 node 版本
+    if (!semver.satisfies(process.version, wanted)) {
+      console.log('Node版本过低，请升级到v8.0.0以上版本');
+      // 退出进程
+      process.exit(1);
+    }
+  }
+  // 版本更新检查
+  _checkVersion() {
+    const notifier = updateNotifier({ pkg, updateCheckInterval: 0 });
+    if (notifier.update) {
+      notifier.notify({ isGlobal: true });
+      shell.exit(1);
+    }
+  }
+  // 检查git是否存在
+  _checkGit() {
+    if (!shell.which('git')) {
+      this.log('对不起，检查到您本地没有安装git，请安装后再次操作'.yellow);
+      shell.exit(1);
+    }
+  }
+  // 检查feflow是否安装
+  _checkFeflow() {
+    if (!shell.which('fef')) {
+      this.log(
+        '【warning】generator-air基于feflow构建，请先全局安装 feflow: '.red +
+          'npm install @feflow/cli -g'.yellow
+      );
+      shell.exit(1);
+    }
+  }
+  // 环境检查
+  _checkEnvironment() {
+    // node 版本检查
+    this._checkNodeVersion('>=8.0.0');
+    // 版本更新检查
+    this._checkVersion();
+    // 检查git命令是否存在
+    this._checkGit();
+    // 检查开发者是否安装feflow
+    this._checkFeflow();
+  }
   // 获取脚手架模板的git仓库地址
   async _getRepository(answers) {
     const repository = mapToGit(answers);
@@ -112,25 +158,8 @@ module.exports = class extends Generator {
   /* 生命周期函数 执行顺序，如下注释所示 */
   // No1
   async initializing() {
-    // 版本更新检查
-    const notifier = updateNotifier({ pkg, updateCheckInterval: 0 });
-    if (notifier.update) {
-      notifier.notify({ isGlobal: true });
-      shell.exit(1);
-    }
-    // 检查git命令是否存在
-    if (!shell.which('git')) {
-      this.log('对不起，检查到您本地没有安装git，请安装后再次操作'.yellow);
-      shell.exit(1);
-    }
-    // 如果开发者没有安装feflow
-    if (!shell.which('fef')) {
-      this.log(
-        '【warning】generator-air基于feflow构建，请先全局安装 feflow: '.red +
-          'npm install @feflow/cli -g'.yellow
-      );
-      shell.exit(1);
-    }
+    // 环境检查
+    this._checkEnvironment();
     const isExists = fs.existsSync(path.resolve(__dirname, '../../projects'));
     if (!isExists) {
       // 创建用于存放脚手架模板的目录
