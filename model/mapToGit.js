@@ -1,5 +1,5 @@
 const dictionary = {
-  pc_vue: 'https://git.code.tencent.com/generator-air/vue-admin.git',
+  pc_vue: 'https://github.com/generator-air/vue-admin.git',
   pc_react: '',
   h5_vue: '',
   h5_react: '',
@@ -8,7 +8,7 @@ const dictionary = {
   miniprogram_wepy: '',
   node_koa: '',
   node_express: '',
-  component_js: 'https://git.code.tencent.com/generator-air/component-js.git',
+  component_js: 'https://github.com/generator-air/component-js.git',
   component_vue: '',
   component_react: '',
 };
